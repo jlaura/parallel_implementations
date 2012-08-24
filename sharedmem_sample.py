@@ -30,6 +30,7 @@ class SharedMemArray(object):
         processes.
         
         From: http://www.alexfb.com/cgi-bin/twiki/view/PtPhysics/WebHome
+        From: http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf
     """
 
     def __init__(self, array):
@@ -126,7 +127,7 @@ def main():
     #print shared_arr.asarray()
     
     #I checked with prints, but the line below will raise an error if the arrays differ.
-    #numpy.testing.assert_equal((numpyarray*-1), shared_arr.asarray(), 'The arrays differ.', verbose=True)
+    numpy.testing.assert_equal((numpyarray*-1), shared_arr.asarray(), 'The arrays differ.', verbose=True)
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
