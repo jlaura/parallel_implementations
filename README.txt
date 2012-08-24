@@ -1,0 +1,1 @@
+ This project is a short example of what I have been able to get working using shared memory arrays for reading and writing numpy in a multiprocessing evironment.  This is multiprocessing using the python built-in module (import multiprocessing).
