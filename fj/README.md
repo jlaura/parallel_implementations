@@ -1,6 +1,5 @@
-################################################################
 Parallel implementations of Fisher-Jenks optimal map classifier.
-################################################################
+================================================================
 
 
 The file `mp.py` runs loops for different sample sizes and different number of 
@@ -10,13 +9,13 @@ pyopencl and pp which also are required. Instructions for installing these are
 below.
 
 
-Install parallel python::
-=========================
+Install parallel python
+-----------------------
 
     easy_install pp
 
-Install pyopencl:
-=================
+Install pyopencl
+----------------
 
     git clone https://github.com/inducer/pyopencl.git
     git submodule init
