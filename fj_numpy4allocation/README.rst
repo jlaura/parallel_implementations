@@ -7,6 +7,7 @@ The diameter calculation code is identical.
 To try the tests locally use:
 
     $ python -m timeit -n 3 'import Test1_Numpy4Allocation' 'Test1_Numpy4Allocation._fisher_jenks()' 
+    
     $ python -m timeit -n 3 'import Test1_Numpy4Allocation' 'Test1_Numpy4Allocation._jay_fj()'
 
 where n is the number if iterations to test.
