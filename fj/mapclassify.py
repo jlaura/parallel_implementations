@@ -2313,3 +2313,11 @@ if __name__ == '__main__':
             10.5, 10.2, 10.0, 9.9]
     x = np.array(x)
 
+    # stage 1
+    n = len(x)
+    Diameter = np.zeros((n,n),'float')
+    for i in range(n-1):
+        for j in range(i+1,n):
+            Diameter[i,j] = x[i,j+1].var()
+
+
