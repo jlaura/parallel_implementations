@@ -39,3 +39,9 @@ $ python -m timeit -n 3 'import Test1_Numpy4Allocation' 'Test1_Numpy4Allocation.
 3 loops, best of 3: 21.3 sec per loop
 
 There you have it!
+
+9.4.12 - Added test3 (untimed) which is almost entirely out of the for loop.  Lots of time trying to count the index,
+which ultimately failed.  My hack was to use another array (should be dtype=numpy.int8 now that I think of it) to 'count'
+n.  I think that this is one step away from being multiprocess ready without any for loops.
+TODO: errorMat is not populated - see inline comment re: using a reflection.  My tests are naive though at the moment
+numpy.asarray([1,2,3,4])
