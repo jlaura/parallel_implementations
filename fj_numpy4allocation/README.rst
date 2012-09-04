@@ -47,3 +47,5 @@ which ultimately failed.  My hack was to use another array (should be dtype=nump
 n.  I think that this is one step away from being multiprocess ready without any for loops.
 TODO: errorMat is not populated - see inline comment re: using a reflection.  My tests are naive though at the moment
 numpy.asarray([1,2,3,4])
+
+P.S. Pyhton unary operations (I beleive that is the right term) were blowing my mind for a while...PEMDASish.
