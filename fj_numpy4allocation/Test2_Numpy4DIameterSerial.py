@@ -3,7 +3,6 @@
 import numpy
 import time
 import timeit
-
      
 def _jay_fj(values, classes=5, sort=True):
     #values = numpy.random.randint(0,1000,size=(10,1))
@@ -27,13 +26,12 @@ def _jay_fj(values, classes=5, sort=True):
     
     #varMat row counter
     x = 0
-    for row in range(1, len(values)+1): #Feed this into a pool of workers row by row and no need for any for loops. How do we count x is the only issue.
+    for row in range(1, len(values)+1):
 	
 	cumsum = 0
 	sum_squares = 0
 	
 	cumsum = numpy.cumsum(values[x:]) #Get the cumulative sum of each element as an ndarray
-	print cumsum
 	sum_squares = numpy.cumsum(numpy.square(values[x:]))	#Get the cumulative square of each element
 	n = numpy.arange(1.0,len(values[x:])+1) #Tracking numVal was really hard outside a loop so we track is in an array
 	distance = sum_squares - (cumsum * (numpy.divide(cumsum, n))) #Your algorithm in numpy.
@@ -49,13 +47,10 @@ def _jay_fj(values, classes=5, sort=True):
 	#Increment the counter
 	x+=1
 	
-	#I do not understand the error matrix well enough to get it populated properly.  On my todo for Thursday.
-	#Using [1,2,3,4] it looks like I can simply rotate the second row of the varMat vertically and put it into the 2nd column
-	# of the errorMat...it can't be that easy though!
+	#I do not udnerstand the error matrix well enough to get it populated properly.  On my todo for Thursday.
 
     print varMat
 	    
-#values = numpy.asarray([12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, 10.4, 10.5, 10.2, 10.0, 9.9])
-values = numpy.asarray([1,2,3,4])
+values = numpy.asarray([12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, 10.4, 10.5, 10.2, 10.0, 9.9])
 #_fisher_jenks(values)
 _jay_fj(values)
