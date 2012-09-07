@@ -71,7 +71,9 @@ def ndarray_to_shmem(array):
     arr = array.reshape((-1, ))
     data = multiprocessing.RawArray(_numpy_to_ctypes[array.dtype.type], 
                                         arr.size)
+    print "Memmove"
     ctypes.memmove(data, array.data[:], len(array.data))
+    time.sleep(100)
     return data
 
 def init(shared_arr_):

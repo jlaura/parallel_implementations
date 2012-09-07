@@ -4,7 +4,7 @@ import numpy
 import timeit
 import time
 import multiprocessing
-import ArrayConvert
+import sharedmem_sample
 
 def allocate(values, classes=5, sort=True):
     if sort:
@@ -25,21 +25,18 @@ def allocate(values, classes=5, sort=True):
     pivotMat = numpy.ndarray(pivotShape, dtype=numpy.float32)
     
     #Initialize the arrays as globals.  PivotMat is not essential the others are.
-    init(ArrayConvert.SharedMemArray(varMat))
+    init(sharedmem_sample.SharedMemArray(varMat))
     
     return errorMat, pivotMat
 
-def fj(sharedVar, i, values):
+def fj(sharedVar, i, values): #Check in DocTest for _fj() p.137 DocTest was for #4
     arr = sharedVar.asarray()
     #I do not like this, but it works to get it passed in...I would likely wrap in a function for readability...
     x = str(i)
     x = int(x[6])
     x = x-1
-    
-    cumsum = 0
-    sum_squares = 0
-    
-    cumsum = numpy.cumsum(values[x:]) #Get the cumulative sum of each element as an ndarray
+
+    sum_squares = numpy.cumsum(values[x:])  #Get the cumulative sum of each element as an ndarray
     sum_squares = numpy.cumsum(numpy.square(values[x:]))#Get the cumulative square of each element
     n = numpy.arange(1.0,len(values[x:])+1) #Tracking numVal was really hard outside a loop so we track is in an array
     distance = sum_squares - (cumsum * (numpy.divide(cumsum, n))) #Your algorithm in numpy.
@@ -47,7 +44,26 @@ def fj(sharedVar, i, values):
     #Here is how we can get the array size back to 'the right size and move the diameter to varMat
     distance = numpy.concatenate((numpy.zeros((arr[i].shape[1] - distance.shape[0]),),distance))
     arr[i][:] = distance
-  
+
+    
+    #After the varMat is populated the first row can be copied to the variance matrix
+    '''
+    Then the error matrix can be calculated in parallel.
+    1. Cleanup the varMatrix
+    2. Move the error matrix into shared memory space.
+    3. Pass a single row in to divide over the number of cores
+    4. Pass each core a subset of the columns
+    5. Calculate the lowest variance between each combination by referencing the diameter matrix
+    6. Populate the cell value with the ideal variance
+    7. Iterate the row
+    8. Num rows = num classes
+    '''
+    
+    #How can we work only on the diagonal.  
+    
+    '''
+    First row is n-1, second is n-2, n*n-1 / 2 is the total length.
+    '''
 
 def init(varMat_):
     #Add the other matrices later
@@ -65,10 +81,13 @@ if __name__ == '__main__':
     #Allocation and memmove to shmemarray all in one function for comparative testing of mem footprint
     errorMat, pivotMat = allocate(values)
     
+    cores = multiprocessing.cpu_count()
+    cores *= 2
+    step = len(values) // cores
     #Multiprocessing
     jobs = []
-    for i in range(len(values)): #Here I need to pass x in.  X being the step in the values array that we are currently in.
-	p = multiprocessing.Process(target=fj, args=(sharedVar,slice(i, i+1), values))
+    for i in range(0,len(values),step): #Here I need to pass x in.  X being the step in the values array that we are currently in.
+	p = multiprocessing.Process(target=fj, args=(sharedVar,slice(i, i+step), values))
 	jobs.append(p)
     for job in jobs:
 	job.start()
