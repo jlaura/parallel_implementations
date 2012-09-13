@@ -13,10 +13,10 @@ def allocate(values, classes=5, sort=True):
 
     numVal = len(values)
     
-    varShape = (numVal+1,numVal+1)
+    varShape = (numVal,numVal)
     varMat = numpy.zeros(varShape, dtype=numpy.float)
     
-    errShape = (numVal, classes)
+    errShape = (classes, numVal)
     errorMat = numpy.empty(errShape)
     errorMat[:] = numpy.NAN # This issue here is that NAN is numpy.float64.
     
@@ -31,16 +31,13 @@ def allocate(values, classes=5, sort=True):
     
     return pivotMat, numClass
 
-def calcSlices(numVal, cores):
-    #Create a list of tuples where the ideal breakdown is calculated.
-    slices = []
-    interval = len(numVal) / cores
-    start = 0
-    for i in range(start,len(numVal),interval):
-	print i
-	tple = ()
-	
-
+def errPop(sharedrow, k):
+    #sharedVar is already a global, sharedrow is the row (non-sharedmem), k is the slice
+    print sharedrow[k]
+    
+    best = numpy.inf #To ensure that the first neighbor calculated is populated
+    #Now we need to track how much of the slice to look at within the slice
+    
 def fj(sharedVar, i, values): #Check in DocTest for _fj() p.137 DocTest was for #4
     arr = sharedVar.asarray()
     #I do not like this, but it works to get it passed in...I would likely wrap in a function for readability...
@@ -63,7 +60,7 @@ def fj(sharedVar, i, values): #Check in DocTest for _fj() p.137 DocTest was for 
     Then the error matrix can be calculated in parallel.
     1. Cleanup the varMatrix - Added to allocate function
     2. Move the error matrix into shared memory space. - Added to allocate function
-    3. Pass a single row in to divide over the number of cores
+    3. Pass a single row in to divide over the number of cores - Added to the slices function.
     4. Pass each core a subset of the columns
     5. Calculate the lowest variance between each combination by referencing the diameter matrix
     6. Populate the cell value with the ideal variance
@@ -74,7 +71,7 @@ def fj(sharedVar, i, values): #Check in DocTest for _fj() p.137 DocTest was for 
     #How can we work only on the diagonal.  
     
     '''
-    First row is n-1, second is n-2, n*n-1 / 2 is the total length.
+    First row is n-1, second is n-2, n*n-1 / 2 is the total length.  This is how we can read stright from the input format to a ctypes array.
     '''
 
 def initVar(varMat_):
@@ -112,14 +109,21 @@ if __name__ == '__main__':
     #Empty the jobs list
     del jobs[:]
 
-    #We need to iterate over each row in the errorMat
-    for j in xrange(0,numClass):
-	#It is not possible to index the sharedmem array, so pass an index of the view.  Slice is the slice of the row to look at.  This is naive, with each core getting the same num of Nan to work with.
-	#TODO - Figure out the algorithm for the optimal breakdown in values between x cores.  The farther into the array, the longet the processing will be as additional potential combinations are tested.
-	slices = calcSlices(len(values), cores)
-	for k in slices:
+    #The first row of the errMat is identical to the first row of the varMat.
+    sharedErr.asarray()[0] = sharedVar.asarray()[0]
+    
+    #We need to iterate over each row save the first in the errorMat
+    for j in xrange(1,numClass):
+	step = len(values)/cores
+	for k in range(0,len(values),step):
 	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step)))
-	print sharedErr.asarray()[j][0:7]
+	    jobs.append(p)
+	    
+    for job in jobs:
+	job.start()
+    for job in jobs:
+	job.join()
 
-    print sharedVar.asarray()
+    #print sharedVar.asarray()
     #_fj(values)
+    
