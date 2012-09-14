@@ -5,9 +5,11 @@ import timeit
 import time
 import multiprocessing
 import sharedmem_sample
-from itertools import combinations
+import warnings
 
-def allocate(values, classes=5, sort=True):
+warnings.filterwarnings('ignore', category=RuntimeWarning)
+
+def allocate(values, classes=5, sort=False):
     numClass = classes
     if sort:
         values.sort()
@@ -60,23 +62,21 @@ def errPop(sharedrow, k, start, stop):
     varArr = sharedVar.asarray()    
     
     
-def fj(sharedVar,i, values, start): #Check in DocTest for _fj() p.137 DocTest was for #4
+def fj(sharedVar,i, values, start):
+    #Get a view of the rows to be worked on
     arr = sharedVar.asarray()
     
     #Setup the counter for the number of values
     n = numpy.arange(1,len(values[start:])+1)
     #Resize the counter and get it set up with teh correct num of preceeding zeros
-    n.resize(16)
+    n.resize(len(values))
     n[start:] = n[:len(values) - start]
     n[0:start] = 0
     
     #Populate the array with the cumulative sum by row!
     rownum = 0
     for row in arr[i]:
-	
-	cumsum = numpy.cumsum(row)
-	sum_squares = numpy.cumsum(numpy.square(row))
-	arr[i][rownum] = ((numpy.cumsum(numpy.square(row))) - ((cumsum*cumsum) / (n)))/ n
+	arr[i][rownum] = ((numpy.cumsum(numpy.square(row))) - ((numpy.cumsum(row)*numpy.cumsum(row)) / (n)))
 	#Increment the num counter for the next row
 	n -= 1
 	#Clean out the negative numbers and clip to 0
@@ -151,12 +151,10 @@ def initErr(errMat_):
     global sharedErr
     sharedErr = errMat_
 
-if __name__ == '__main__':
-    multiprocessing.freeze_support()#For windows
-    
-    values = numpy.asarray([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
+def main():
+    #values = numpy.asarray([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
     #values = numpy.asarray([1,2,3,4])
-    #values = numpy.arange(5000)
+    values = numpy.arange(5000)
     #Separated from FJ for timing experiments later
     #Allocation and memmove to shmemarray all in one function for comparative testing of mem footprint
     pivotMat, numClass = allocate(values)
@@ -173,25 +171,31 @@ if __name__ == '__main__':
 	job.start()
     for job in jobs:
 	job.join()
-    
-    #Empty the jobs list
-    del jobs[:]
-    print sharedVar.asarray()
-    #The first row of the errMat is identical to the first row of the varMat.
-    sharedErr.asarray()[0] = sharedVar.asarray()[0]
-    
-    #We need to iterate over each row save the first in the errorMat
-    for j in xrange(1,numClass):
-	step= len(values)/cores
-	for k in range(0,len(values),step):
-	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), k, k+step))
-	    jobs.append(p)
-	    
-    for job in jobs:
-	job.start()
-    for job in jobs:
-	job.join()
 
-    print sharedVar.asarray()
-    #_fj(values)
+    #Empty the jobs list
+    #del jobs[:]
+    #print sharedVar.asarray()
+    ##The first row of the errMat is identical to the first row of the varMat.
+    #sharedErr.asarray()[0] = sharedVar.asarray()[0]
+    
+    ##We need to iterate over each row save the first in the errorMat
+    #for j in xrange(1,numClass):
+	#step= len(values)/cores
+	#for k in range(0,len(values),step):
+	    #p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), k, k+step))
+	    #jobs.append(p)
+	    
+    #for job in jobs:
+	#job.start()
+    #for job in jobs:
+	#job.join()
+
+    #print sharedVar.asarray()
+    #_fj(values)    
+
+if __name__ == '__main__':
+    multiprocessing.freeze_support()#For windows
+    main()
+    
+    
     
