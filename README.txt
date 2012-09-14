@@ -1,3 +1,12 @@
+Variance Algorithm
+------------------
+I added the script Variance Algorithm where I ran through the way in which I think (thought) that variance should be calculated.  What am I doing wrong?
+
+Lines 88 - 143 are a big block comment with the logic, plus the first few calculated by hand to prove(ish) that the algorithm is doing what I intended it 
+to do.  Not that that means the algorithm is right...
+
+Old
+----
  This project is a short example of what I have been able to get working using shared memory arrays for reading and writing numpy in a multiprocessing evironment.  This is multiprocessing using the python built-in module (import multiprocessing).
 
 A 3 second delay is introduced in function 'f' to allow time to see that multiple processes are spawned.
