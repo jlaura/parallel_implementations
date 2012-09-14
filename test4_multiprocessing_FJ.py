@@ -84,18 +84,41 @@ def errPop(sharedrow, k, start, stop):
     
 def fj(sharedVar,i, values, start): #Check in DocTest for _fj() p.137 DocTest was for #4
     arr = sharedVar.asarray()
+    
+    #Setup the counter for the number of values
     n = numpy.arange(1,len(values[start:])+1)
+    #Resize the counter and get it set up with teh correct num of preceeding zeros
     n.resize(16)
     n[start:] = n[:len(values) - start]
     n[0:start] = 0
-
-    #Populate the array with the cumulative sum
+    
+    #Populate the array with the cumulative sum by row!
     rownum = 0
     for row in arr[i]:
-	arr[i][rownum] = numpy.cumsum(row)
-	arr[i][rownum] = (numpy.cumsum(numpy.square(row))) - (arr[i][rownum] * (arr[i][rownum] /n ))
+	cumsum = numpy.cumsum(row)
+	sum_squares = numpy.cumsum(numpy.square(row))
+	arr[i][rownum] = (numpy.cumsum(numpy.square(row))) - cumsum * cumsum / n
+	
+	'''
+	What am I doing wrong here - mem duplication aside.
+	row = [  99.  100.  102.  103.  103.  103.  104.  105.  106.  108.  108.  108. 108.  108.  110.  120.] 
+	cumsum = [   99.   199.   301.   404.   507.   610.   714.   819.   925.  1033. 1141.  1249.  1357.  1465.  1575.  1695.] 
+	sum_squares = [   9801.   19801.   30205.   40814.   51423.   62032.   72848.   83873. 95109.  106773.  118437.  130101.  141765.  153429.  165529.  179929.]
+	n = [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16]
+	
+	9801 - (99*99/1) = 0 - RIGHT
+	19801 - (199*199/2) = 0.5 - WRONG, should be 12, so my algorithm is wrong...
+	30205 - (301*301/3) = 4.666667 - WRONG, should also be 12...
+	''' 
+	
+	#Increment the num counter for the next row
+	n -= 1
+	n = numpy.clip(n,0, len(values)) #Clean out the negative numbers and clip to 0
+	
 	#n is not pushing the right direction here...
 	rownum+=1
+    
+    
     #sum_squares = numpy.cumsum(numpy.square(values[start:]))
      #Tracking numVal was really hard outside a loop so we 
     #distance = sum_squares - (cumsum * (cumsum /n)) #Your algorithm in numpy.
