@@ -5,6 +5,7 @@ import timeit
 import time
 import multiprocessing
 import sharedmem_sample
+from itertools import combinations
 
 def allocate(values, classes=5, sort=True):
     numClass = classes
@@ -16,11 +17,16 @@ def allocate(values, classes=5, sort=True):
     varShape = (numVal,numVal)
     varMat = numpy.zeros(varShape, dtype=numpy.float)
     
+    #Preload the values in the varMat.
+    for x in range(0,len(values)):
+	varMat[x] = values[:]
+	varMat[x][0:x] = 0
+
     errShape = (classes, numVal)
     errorMat = numpy.empty(errShape)
-    errorMat[:] = numpy.NAN # This issue here is that NAN is numpy.float64.
+    errorMat[:] = numpy.inf # This issue here is that NAN is numpy.float64.
     
-    pivotShape = (classes+1, numVal+1)
+    pivotShape = (classes, numVal)
     pivotMat = numpy.ndarray(pivotShape, dtype=numpy.float32)
     
     #Initialize the arrays as globals.  PivotMat is not essential the others are.
@@ -30,29 +36,71 @@ def allocate(values, classes=5, sort=True):
     del varMat, errorMat
     
     return pivotMat, numClass
+	
 
-def errPop(sharedrow, k):
-    #sharedVar is already a global, sharedrow is the row (non-sharedmem), k is the slice
-    print sharedrow[k]
+def errPop(sharedrow, k, start, stop):
+    '''This works, but I need to clean the Diameter matrix first, failed the pseudo doc test I did and turned into a total rework.  At least I'm much more versed in slicing, indexing, and broadcasting.'''
+    #TODO - How can I access the PySal doctests??
     
-    best = numpy.inf #To ensure that the first neighbor calculated is populated
-    #Now we need to track how much of the slice to look at within the slice
     
-def fj(sharedVar, i, values): #Check in DocTest for _fj() p.137 DocTest was for #4
+
+    '''
+    For example, a list of 16 items is split over 4 cores.  Each core will process
+    4 columns of the error matrix in a naive split.  The first core therefore needs to 
+    be able to access and calculate the minimum error for:
+    
+    D(0,0) + D(1,2) = x
+    D(0,1) + D(2,2) = y
+    
+    E(2,2) = min{x,y}
+    where D is the Diameter matrix, E is the error matrix, and {x,y} is a set of potential
+    errors.
+    
+    Since we are multiprocessing and only getting a view of 1 row, we can write E as:
+    E[2] = min{x,y} 
+    
+    because the row is constant
+    '''    
+    #Each core get passed a view of the sharedVar
+    varArr = sharedVar.asarray()    
+    #for col in range(0,stop):
+	#right = stop
+	#print col, varArr[0][col]
+	#err = varArr[0][col] + varArr[col+1][stop]
+
+	#If the calculated error is less than the existing value, use the minimum.
+	#if err < sharedrow[start]:
+	    #sharedrow[col] = err
+	    #print sharedrow
+    #x is the column that we are in at the moment
+    #D = varArr[]
+    
+
+    #col += 1
+    
+
+    
+    #Each core needs to know where it is starting.
+    
+def fj(sharedVar,i, values, start): #Check in DocTest for _fj() p.137 DocTest was for #4
     arr = sharedVar.asarray()
-    #I do not like this, but it works to get it passed in...I would likely wrap in a function for readability...
-    x = str(i)
-    x = int(x[6])
-    x = x-1
+    n = numpy.arange(1,len(values[start:])+1)
+    n.resize(16)
+    n[start:] = n[:len(values) - start]
+    n[0:start] = 0
 
-    cumsum = numpy.cumsum(values[x:])  #Get the cumulative sum of each element as an ndarray
-    sum_squares = numpy.cumsum(numpy.square(values[x:]))#Get the cumulative square of each element
-    n = numpy.arange(1.0,len(values[x:])+1) #Tracking numVal was really hard outside a loop so we track is in an array
-    distance = sum_squares - (cumsum * (numpy.divide(cumsum, n))) #Your algorithm in numpy.
-
-    #Here is how we can get the array size back to 'the right size and move the diameter to varMat
-    distance = numpy.concatenate((numpy.zeros((arr[i].shape[1] - distance.shape[0]),),distance))
-    arr[i][:] = distance
+    #Populate the array with the cumulative sum
+    rownum = 0
+    for row in arr[i]:
+	arr[i][rownum] = numpy.cumsum(row)
+	arr[i][rownum] = (numpy.cumsum(numpy.square(row))) - (arr[i][rownum] * (arr[i][rownum] /n ))
+	#n is not pushing the right direction here...
+	rownum+=1
+    #sum_squares = numpy.cumsum(numpy.square(values[start:]))
+     #Tracking numVal was really hard outside a loop so we 
+    #distance = sum_squares - (cumsum * (cumsum /n)) #Your algorithm in numpy.
+    #distance = numpy.concatenate((numpy.zeros((arr.shape[1] - distance.shape[0]),),distance))
+    #arr[:] = distance
 
     
     #After the varMat is populated the first row can be copied to the variance matrix
@@ -61,7 +109,7 @@ def fj(sharedVar, i, values): #Check in DocTest for _fj() p.137 DocTest was for 
     1. Cleanup the varMatrix - Added to allocate function
     2. Move the error matrix into shared memory space. - Added to allocate function
     3. Pass a single row in to divide over the number of cores - Added to the slices function.
-    4. Pass each core a subset of the columns
+    4. Pass each core a subset of the columns - Added just prior to multiprocessing
     5. Calculate the lowest variance between each combination by referencing the diameter matrix
     6. Populate the cell value with the ideal variance
     7. Iterate the row
@@ -86,43 +134,43 @@ def initErr(errMat_):
 if __name__ == '__main__':
     multiprocessing.freeze_support()#For windows
     
-    #values = numpy.asarray([12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, 10.4, 10.5, 10.2, 10.0, 9.9])
+    values = numpy.asarray([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
     #values = numpy.asarray([1,2,3,4])
-    values = numpy.arange(5000)
+    #values = numpy.arange(5000)
     #Separated from FJ for timing experiments later
     #Allocation and memmove to shmemarray all in one function for comparative testing of mem footprint
     pivotMat, numClass = allocate(values)
     
     cores = multiprocessing.cpu_count()
-    cores *= 2
+    #cores *= 2
     step = len(values) // cores
     #Multiprocessing
     jobs = []
-    for i in range(0,len(values),step): #Here I need to pass x in.  X being the step in the values array that we are currently in.
-	p = multiprocessing.Process(target=fj, args=(sharedVar,slice(i, i+step), values))
+    for i in range(0,len(values),step):
+	p = multiprocessing.Process(target=fj, args=(sharedVar, slice(i, i+step), values, i))
 	jobs.append(p)
     for job in jobs:
 	job.start()
     for job in jobs:
 	job.join()
     
-    #Empty the jobs list
-    del jobs[:]
-
-    #The first row of the errMat is identical to the first row of the varMat.
-    sharedErr.asarray()[0] = sharedVar.asarray()[0]
+    ##Empty the jobs list
+    #del jobs[:]
+    #print sharedVar.asarray()
+    ##The first row of the errMat is identical to the first row of the varMat.
+    #sharedErr.asarray()[0] = sharedVar.asarray()[0]
     
-    #We need to iterate over each row save the first in the errorMat
-    for j in xrange(1,numClass):
-	step = len(values)/cores
-	for k in range(0,len(values),step):
-	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step)))
-	    jobs.append(p)
+    ##We need to iterate over each row save the first in the errorMat
+    #for j in xrange(1,numClass):
+	#step= len(values)/cores
+	#for k in range(0,len(values),step):
+	    #p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), k, k+step))
+	    #jobs.append(p)
 	    
-    for job in jobs:
-	job.start()
-    for job in jobs:
-	job.join()
+    #for job in jobs:
+	#job.start()
+    #for job in jobs:
+	#job.join()
 
     #print sharedVar.asarray()
     #_fj(values)
