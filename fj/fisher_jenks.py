@@ -82,6 +82,7 @@ def fisher_jenks(x, k):
         j -= 1
            
     # pivots have the start ids for the second through last clusters
+    print Diameter
     return pivots, Diameter
 
 def fisher_jenks_d(x, k):
