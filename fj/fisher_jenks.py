@@ -25,13 +25,13 @@ def fisher_jenks(x, k):
     >>> x = [12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, \
             10.4, 10.5, 10.2, 10.0, 9.9]
     >>> p2 = fisher_jenks(x,2)
-    >>> p2
+    >>> p2[0]
     [1]
     >>> p4 = fisher_jenks(x,4)
-    >>> p4
+    >>> p4[0]
     [1, 8, 14]
     >>> p5 = fisher_jenks(x,5)
-    >>> p5
+    >>> p5[0]
     [1, 6, 8, 14]
 
     """
@@ -82,7 +82,8 @@ def fisher_jenks(x, k):
         j -= 1
            
     # pivots have the start ids for the second through last clusters
-    return pivots
+    print Diameter
+    return pivots, Diameter
 
 def fisher_jenks_d(x, k):
     """
@@ -109,13 +110,13 @@ def fisher_jenks_d(x, k):
     >>> x = [12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, \
             10.4, 10.5, 10.2, 10.0, 9.9]
     >>> p2 = fisher_jenks(x,2)
-    >>> p2
+    >>> p2[0]
     [1]
     >>> p4 = fisher_jenks(x,4)
-    >>> p4
+    >>> p4[0]
     [1, 8, 14]
     >>> p5 = fisher_jenks(x,5)
-    >>> p5
+    >>> p5[0]
     [1, 6, 8, 14]
 
     """

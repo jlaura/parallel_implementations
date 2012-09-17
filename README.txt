@@ -1,3 +1,29 @@
+Timeit:
+
+values = numpy.arange(5000)
+
+Serial:
+python -m timeit -n 3 'import Test1_Numpy4Allocation' 'Test1_Numpy4Allocation._fisher_jenks()'
+3 loops, best of 3: 12.4 sec per loop
+
+Using ~500MB RAM
+
+My Multiprocessing:
+python -m timeit -n 3 'import Variance_Algorithm' 'Variance_Algorithm.main()'
+3 loops, best of 3: 1.49 sec per loop
+
+Spiking to ~800MB of RAM briefly.  That is the memmove.  It likely spiked to 1GB, but not long enough for Activity Monitor to catch it.
+
+
+Variance Algorithm
+------------------
+I added the script Variance Algorithm where I ran through the way in which I think (thought) that variance should be calculated.  What am I doing wrong?
+
+Lines 88 - 143 are a big block comment with the logic, plus the first few calculated by hand to prove(ish) that the algorithm is doing what I intended it 
+to do.  Not that that means the algorithm is right...
+
+Old
+----
  This project is a short example of what I have been able to get working using shared memory arrays for reading and writing numpy in a multiprocessing evironment.  This is multiprocessing using the python built-in module (import multiprocessing).
 
 A 3 second delay is introduced in function 'f' to allow time to see that multiple processes are spawned.

@@ -95,9 +95,10 @@ def fj(sharedVar,i, values, start): #Check in DocTest for _fj() p.137 DocTest wa
     #Populate the array with the cumulative sum by row!
     rownum = 0
     for row in arr[i]:
+	
 	cumsum = numpy.cumsum(row)
 	sum_squares = numpy.cumsum(numpy.square(row))
-	arr[i][rownum] = (numpy.cumsum(numpy.square(row))) - cumsum * cumsum / n
+	arr[i][rownum] = ((numpy.cumsum(numpy.square(row))) - ((cumsum*cumsum) / (n)))/n
 	
 	'''
 	What am I doing wrong here - mem duplication aside.
@@ -107,8 +108,9 @@ def fj(sharedVar,i, values, start): #Check in DocTest for _fj() p.137 DocTest wa
 	n = [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16]
 	
 	9801 - (99*99/1) = 0 - RIGHT
-	19801 - (199*199/2) = 0.5 - WRONG, should be 12, so my algorithm is wrong...
-	30205 - (301*301/3) = 4.666667 - WRONG, should also be 12...
+	19801 - (199*199/2) = 0.5 - 
+	30205 - (301*301/3) = 4.666667
+	
 	''' 
 	
 	#Increment the num counter for the next row
@@ -195,6 +197,6 @@ if __name__ == '__main__':
     #for job in jobs:
 	#job.join()
 
-    #print sharedVar.asarray()
+    print sharedVar.asarray()
     #_fj(values)
     
