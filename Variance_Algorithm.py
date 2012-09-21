@@ -5,9 +5,6 @@ import timeit
 import time
 import multiprocessing
 import sharedmem_sample
-import warnings
-
-warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 def allocate(values, classes=5, sort=False):
     numClass = classes
@@ -58,43 +55,46 @@ def errPop(sharedrow, k, start, stop):
     
     because the row is constant
     '''    
+    
     #Each core get passed a view of the sharedVar
-    varArr = sharedVar.asarray()    
+    varArr = sharedVar.asarray()
+
+    '''I should populate the errMat with the min of the cumsum from index x-y and index y+1 - z'''
+    
+    for y in sharedrow[k]:
+	print y
+	print sharedrow[k]
+	#i = 0
+	#for x in range(0,stop):
+	    #err = varArr[0][i] + varArr[i+1][stop]
+	    ##print err, i, y
+	    #i+=1
+	    #if err <= y:
+		#sharedrow[y] = err
+    
     
     '''My idea here is to have a single core start to populate the first row.  Once it has hit a predetermiend point a second core can start on the second row'''
     
     
     
 def fj(sharedVar,i, values, start):
+    '''Calculate the variance matrix by row from a shared memory array'''
     arr = sharedVar.asarray()
-    
-    #All these lines do is setup the scalar n.  
-    #n = numpy.arange(1,len(values[start:])+1)
-    #n.resize(len(values))
-    #n[start:] = n[:len(values) - start]  
-    #n[0:start] = 0
-    arr[i] = numpy.apply_along_axis(calcVar, 0, arr)
-    
-    #rownum = 0
-    #for row in arr[i]:
-	#arr[i][rownum] = ((numpy.cumsum(numpy.square(row))) - ((numpy.cumsum(row)*numpy.cumsum(row)) / (n)))
-	##Increment the num counter for the next row
-	#n -= 1
-	##Grab the next row
-	#rownum+=1
+    arr[i] = numpy.apply_along_axis(calcVar, 1, arr[i], len(values))
+    arr[i][numpy.isnan(arr[i])] = 0 #Set the nan to 0
 
-def calcVar(arrRow):
-    lenN = (arrRow != 0).sum() #Get the number of nonzero elements in the array row
-    if lenN == 16:
-	lenN = 0
-    
+def calcVar(arrRow, lenValues):
+    '''Calculate the diameter matrix'''
     #n is the number of elements.  These lines maintain the shape and count of n, leading 0s are added to the array.
-    n = numpy.arange(1, lenN+1) #Generate a vector 1-n in length with values 1-n
-    n.resize(arrRow.shape[0]) #Reshape the vector
-    n[arrRow.shape[0]-lenN:] =  n[:lenN-arrRow.shape[0]] #Reorder the vector
-    n[0:arrRow.shape[0]-lenN] = 0    #Set the leading elements of n to zero, where n should be 0
-    print n.shape, arrRow.shape
+    lenN = (arrRow != 0).sum() #Get the number of nonzero elements in the array row
+    n = numpy.arange(1, lenN+1) #Generate a vector with len(values) and populate it 1-n
     
+    #Only if the number of elements (n) in the Variance Matrix Row are not equal to the total number of elements
+    if lenN != lenValues:
+	n.resize(arrRow.shape[0]) #Reshape the n vector	
+	n[arrRow.shape[0]-lenN:] =  n[:lenN-arrRow.shape[0]] #Reorder the n vector
+	n[0:arrRow.shape[0]-lenN] = 0    #Set the leading elements of n to zero, where n should be 0
+
     return ((numpy.cumsum(numpy.square(arrRow))) - ((numpy.cumsum(arrRow)*numpy.cumsum(arrRow)) / (n)))
 
 def initVar(varMat_):
@@ -117,7 +117,7 @@ def main():
     cores *= 2
     step = len(values) // cores
     
-    #Calculate the variance matrix
+    '''Calculate the variance matrix'''
     jobs = []
     for i in range(0,len(values),step):
 	p = multiprocessing.Process(target=fj, args=(sharedVar, slice(i, i+step), values, i))
@@ -130,9 +130,7 @@ def main():
     #Empty the jobs list
     del jobs[:]
     
-    #print the values of the diameter matrix
-    #print sharedVar.asarray()
-    
+    '''Calculate the error matrix'''
     #The first row of the errMat is identical to the first row of the varMat.
     sharedErr.asarray()[0] = sharedVar.asarray()[0]
     
@@ -142,12 +140,14 @@ def main():
 	for k in range(0,len(values),step):
 	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), k, k+step))
 	    jobs.append(p)
-	    
+    
     for job in jobs:
 	job.start()
     for job in jobs:
 	job.join()
 
+    print sharedErr.asarray()
+    
 if __name__ == '__main__':
     multiprocessing.freeze_support()#For windows
     main()
