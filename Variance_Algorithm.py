@@ -66,15 +66,13 @@ def errPop(sharedrow, k, start, stop):
     
     
 def fj(sharedVar,i, values, start):
-    
     arr = sharedVar.asarray()
     
     #All these lines do is setup the scalar n.  
     #n = numpy.arange(1,len(values[start:])+1)
     #n.resize(len(values))
-    #n[start:] = n[:len(values) - start]
+    #n[start:] = n[:len(values) - start]  
     #n[0:start] = 0
-    
     arr[i] = numpy.apply_along_axis(calcVar, 0, arr)
     
     #rownum = 0
@@ -89,10 +87,14 @@ def calcVar(arrRow):
     lenN = (arrRow != 0).sum() #Get the number of nonzero elements in the array row
     if lenN == 16:
 	lenN = 0
-    n = numpy.arange(1, lenN+1) #Generate a scalar 1-n in length with values 1-n
-    n.resize(arrRow.shape[0]) #Reshape the scalar
-    n[arrRow.shape[0]-lenN:] =  n[:lenN-arrRow.shape[0]]
-    n[0:arrRow.shape[0]-lenN] = 0    
+    
+    #n is the number of elements.  These lines maintain the shape and count of n, leading 0s are added to the array.
+    n = numpy.arange(1, lenN+1) #Generate a vector 1-n in length with values 1-n
+    n.resize(arrRow.shape[0]) #Reshape the vector
+    n[arrRow.shape[0]-lenN:] =  n[:lenN-arrRow.shape[0]] #Reorder the vector
+    n[0:arrRow.shape[0]-lenN] = 0    #Set the leading elements of n to zero, where n should be 0
+    print n.shape, arrRow.shape
+    
     return ((numpy.cumsum(numpy.square(arrRow))) - ((numpy.cumsum(arrRow)*numpy.cumsum(arrRow)) / (n)))
 
 def initVar(varMat_):
@@ -129,7 +131,7 @@ def main():
     del jobs[:]
     
     #print the values of the diameter matrix
-    print sharedVar.asarray()
+    #print sharedVar.asarray()
     
     #The first row of the errMat is identical to the first row of the varMat.
     sharedErr.asarray()[0] = sharedVar.asarray()[0]
