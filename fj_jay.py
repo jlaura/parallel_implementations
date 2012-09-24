@@ -37,7 +37,7 @@ def allocate(values, classes=5, sort=False):
 	
 
 def errPop(sharedrow, k, numVal, stop, numRow):
-    '''Calculate the error matrix'''
+    #Calculate the error matrix
     varArr = sharedVar.asarray() #Get a view of D
     errArr = sharedErr.asarray() #Get a view of the error matrix
     
@@ -54,13 +54,13 @@ def errPop(sharedrow, k, numVal, stop, numRow):
 	errArr[numRow,col] = best
 
 def fj(sharedVar,i, values, start):
-    '''Calculate the variance matrix by row from a shared memory array'''
+    #Calculate the variance matrix by row from a shared memory array
     arr = sharedVar.asarray()
     arr[i] = numpy.apply_along_axis(calcVar, 1, arr[i], len(values))
     arr[i][numpy.isnan(arr[i])] = 0 #Set the nan to 0
 
 def calcVar(arrRow, lenValues):
-    '''Calculate the diameter matrix'''
+    #Calculate the diameter matrix
     #n is the number of elements.  These lines maintain the shape and count of n, leading 0s are added to the array.
     lenN = (arrRow != 0).sum() #Get the number of nonzero elements in the array row
     n = numpy.arange(1, lenN+1) #Generate a vector with len(values) and populate it 1-n
@@ -82,20 +82,21 @@ def initErr(errMat_):
     global sharedErr
     sharedErr = errMat_
 
+    
 def main():
     values = numpy.asarray([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
     #values = numpy.arange(5000)
     numVal = len(values)
 
-    '''Allocate all necessary memory'''
+    #Allocate all necessary memory
     pivotMat, numClass = allocate(values)
     
-    '''Calculate the number of cores over which to multiprocess'''
+    #Calculate the number of cores over which to multiprocess
     cores = multiprocessing.cpu_count()
     cores *= 2
     step = numVal // cores
     
-    '''Calculate the variance matrix'''
+    #Calculate the variance matrix
     jobs = []
     for i in range(0,len(values),step):
 	p = multiprocessing.Process(target=fj, args=(sharedVar, slice(i, i+step), values, i))
@@ -105,7 +106,7 @@ def main():
     
     del jobs[:] #Empty the jobs list
     
-    '''Calculate the error matrix'''
+    #Calculate the error matrix
     sharedErr.asarray()[0] = sharedVar.asarray()[0]
 
     for j in xrange(1,numClass):
@@ -116,7 +117,7 @@ def main():
 	    p.start()
 	    p.join() #Wait until all the processes per row are finished before iterating the row
 
-    '''Calculate Pivots'''
+    #Calculate Pivots
     pivots = []
     j = numClass - 1
     col = numVal - 1
