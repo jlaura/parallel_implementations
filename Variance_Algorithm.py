@@ -37,7 +37,7 @@ def allocate(values, classes=5, sort=False):
     return pivotMat, numClass
 	
 
-def errPop(sharedrow, k, start, stop):
+def errPop(sharedrow, k, numVal, stop):
     '''
     A list of 16 items is split over 4 cores.  Each core will process
     4 columns of the error matrix in a naive split.  The first core therefore needs to 
@@ -60,17 +60,21 @@ def errPop(sharedrow, k, start, stop):
     varArr = sharedVar.asarray()
 
     '''I should populate the errMat with the min of the cumsum from index x-y and index y+1 - z'''
-    
-    for y in sharedrow[k]:
-	print y
-	print sharedrow[k]
+
+    for y in range(0, stop):
+	z = y+1
+	if z > numVal:
+	    z = numVal
+	print stop, varArr[0][y], varArr[z][stop-1]
+	#err = stop,varArr[0][y] + varArr[y+1][stop-1]
+	#if err <= y:
+	    #sharedrow[y] = err	
 	#i = 0
 	#for x in range(0,stop):
-	    #err = varArr[0][i] + varArr[i+1][stop]
+	    #err = varArr[0][y] + varArr[i+1][stop]
 	    ##print err, i, y
 	    #i+=1
-	    #if err <= y:
-		#sharedrow[y] = err
+	    
     
     
     '''My idea here is to have a single core start to populate the first row.  Once it has hit a predetermiend point a second core can start on the second row'''
@@ -114,7 +118,7 @@ def main():
     pivotMat, numClass = allocate(values)
     
     cores = multiprocessing.cpu_count()
-    cores *= 2
+    #cores *= 2
     step = len(values) // cores
     
     '''Calculate the variance matrix'''
@@ -127,6 +131,8 @@ def main():
     for job in jobs:
 	job.join()
 
+    print sharedVar.asarray()
+
     #Empty the jobs list
     del jobs[:]
     
@@ -134,11 +140,13 @@ def main():
     #The first row of the errMat is identical to the first row of the varMat.
     sharedErr.asarray()[0] = sharedVar.asarray()[0]
     
+    
+    numVal = len(values)
     #We need to iterate over each row save the first in the errorMat
     for j in xrange(1,numClass):
 	step= len(values)/cores
 	for k in range(0,len(values),step):
-	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), k, k+step))
+	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), numVal, k+step))
 	    jobs.append(p)
     
     for job in jobs:
