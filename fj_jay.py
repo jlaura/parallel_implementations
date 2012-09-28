@@ -54,12 +54,9 @@ def partitionErr(cores, numErr):
     hi = values[-1]
     k = cores
     
-    print lo, hi
-    
-    
     while lo < hi:
 	mid = lo + (hi-lo)/2
-	x = getX(values,mid)
+	x = getX(values,lo,hi,mid)
 	print mid, x
 	if x <= k:
 	    hi = mid
@@ -67,12 +64,12 @@ def partitionErr(cores, numErr):
 	    lo = mid + 1
     return lo
 
-def getX(values,mid):
+def getX(values,lo,hi,mid):
     total = 0
     index = 0
     numK = 1
-    for x in values:
-	total += x
+    for x in values(lo, hi): #I need to iterate over values, but in the range lo, hi.  Lo / hi need to be nearest.
+	total += x 
 	print total
 	if total > mid:
 	    total = values[index]
