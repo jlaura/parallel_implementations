@@ -595,7 +595,7 @@ def _pfisher_jenks_mp(values, classes=5, sort=True):
         j.join()
     """
     t0 = time.time()
-    data = values.tolist()
+    data = values#.tolist() #The values pased in are already a list
     pool = mp.Pool(processes=numProc)
     args = [[data, i] for i in range(numVal)]
     results = pool.map(computeError, args)
@@ -629,8 +629,11 @@ def _pfisher_jenks_mp(values, classes=5, sort=True):
         pNum -= 1
 
     t3 = time.time()
-    print pivots
-    return (t1-t0, t2-t1, t3-t2, t3-t0)
+    times = (t1-t0, t2-t1, t3-t2, t3-t0)
+    #print pivots
+    return pivots, times
+
+
 
 def computeErrorPP(values, pos):
     """
@@ -773,7 +776,7 @@ class Map_Classifier:
 
     def __repr__(self):
         return self._table_string()
-
+        
     def get_tss(self):
         """
         Total sum of squares around class means
@@ -1476,6 +1479,7 @@ class PFisher_Jenks(Map_Classifier):
     def _set_bins(self):
         x = self.y.copy()
         self.bins =  _pfisher_jenks(x, classes=self.k)[1:]
+        
 
 class PFisher_Jenks_MP(Map_Classifier):
     """
@@ -1517,11 +1521,14 @@ class PFisher_Jenks_MP(Map_Classifier):
     def __init__(self, y, k = K):
         self.k = k
         Map_Classifier.__init__(self, y)
-        self.name = "Par_Fisher_Jenks_MP"
-
+        self.name = "Par_Fisher_Jenks_MP"        
+        
     def _set_bins(self):
         x = self.y.copy()
-        self.bins =  _pfisher_jenks_mp(x, classes=self.k)[1:]
+        self.bins, self.time = _pfisher_jenks_mp(x, classes=self.k,)
+        
+    def time(self):
+        return self.time
 
 class PFisher_Jenks_PP(Map_Classifier):
     """
@@ -2301,9 +2308,7 @@ def opt_part(x):
 
 
 
-def _test():
-    import doctest
-    doctest.testmod(verbose = True)
+
 
 if __name__ == '__main__':
     #_test()
