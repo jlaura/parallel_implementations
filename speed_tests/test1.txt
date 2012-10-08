@@ -1,0 +1,558 @@
+Pivots:  [31, 58, 82, 108]
+FJ Serial using 125 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.296257
+Error matrix Calculation: 0.043211
+Find the Pivots: 0.000124
+Total Time: 0.339592
+
+FJ Original multiprocessing using 125 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.160945
+Error matrix Calculation: 0.034019
+Find the Pivots: 0.000012
+Total Time: 0.194976
+
+Pivots:  [31, 58, 82, 108]
+FJ new multiprocessing using 125 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.063535
+Error matrix Calculation: 0.298478
+Find the Pivots: 0.000925
+Total Time: 0.362938
+
+Pivots:  [31, 58, 82, 108]
+FJ new with vectorized, single core, error matrix using 125 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.058913
+Error matrix Calculation: 0.015551
+Find the Pivots: 0.000918
+Total Time: 0.075382
+
+Pivots:  [48, 107, 157, 203]
+FJ Serial using 250 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 1.252753
+Error matrix Calculation: 0.195459
+Find the Pivots: 0.000284
+Total Time: 1.448496
+
+FJ Original multiprocessing using 250 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.383777
+Error matrix Calculation: 0.115811
+Find the Pivots: 0.000013
+Total Time: 0.499601
+
+Pivots:  [48, 107, 157, 203]
+FJ new multiprocessing using 250 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.081356
+Error matrix Calculation: 1.203984
+Find the Pivots: 0.002002
+Total Time: 1.287342
+
+Pivots:  [48, 107, 157, 203]
+FJ new with vectorized, single core, error matrix using 250 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.080233
+Error matrix Calculation: 0.033024
+Find the Pivots: 0.001968
+Total Time: 0.115225
+
+Pivots:  [84, 185, 288, 398]
+FJ Serial using 500 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 5.106048
+Error matrix Calculation: 0.784970
+Find the Pivots: 0.000596
+Total Time: 5.891614
+
+FJ Original multiprocessing using 500 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 1.514161
+Error matrix Calculation: 0.447927
+Find the Pivots: 0.000014
+Total Time: 1.962102
+
+Pivots:  [84, 185, 288, 398]
+FJ new multiprocessing using 500 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.129027
+Error matrix Calculation: 4.893149
+Find the Pivots: 0.004024
+Total Time: 5.026200
+
+Pivots:  [84, 185, 288, 398]
+FJ new with vectorized, single core, error matrix using 500 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.127345
+Error matrix Calculation: 0.067903
+Find the Pivots: 0.004030
+Total Time: 0.199278
+
+Pivots:  [183, 354, 573, 778]
+FJ Serial using 1000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 21.142839
+Error matrix Calculation: 3.151259
+Find the Pivots: 0.001166
+Total Time: 24.295264
+
+FJ Original multiprocessing using 1000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 5.626510
+Error matrix Calculation: 1.769816
+Find the Pivots: 0.000016
+Total Time: 7.396342
+
+Pivots:  [183, 354, 573, 778]
+FJ new multiprocessing using 1000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.305699
+Error matrix Calculation: 19.336169
+Find the Pivots: 0.007977
+Total Time: 19.649845
+
+Pivots:  [183, 354, 573, 778]
+FJ new with vectorized, single core, error matrix using 1000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.304492
+Error matrix Calculation: 0.148357
+Find the Pivots: 0.007874
+Total Time: 0.460723
+
+Pivots:  [395, 813, 1197, 1576]
+FJ Serial using 2000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 89.817865
+Error matrix Calculation: 12.603388
+Find the Pivots: 0.002286
+Total Time: 102.423539
+
+FJ Original multiprocessing using 2000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 21.883229
+Error matrix Calculation: 7.111422
+Find the Pivots: 0.000018
+Total Time: 28.994669
+
+Pivots:  [395, 813, 1197, 1576]
+FJ new multiprocessing using 2000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.760524
+Error matrix Calculation: 78.302616
+Find the Pivots: 0.015744
+Total Time: 79.078884
+
+Pivots:  [395, 813, 1197, 1576]
+FJ new with vectorized, single core, error matrix using 2000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.755447
+Error matrix Calculation: 0.362201
+Find the Pivots: 0.015398
+Total Time: 1.133046
+
+Pivots:  [704, 1521, 2294, 3126]
+FJ Serial using 4000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 405.586446
+Error matrix Calculation: 51.117107
+Find the Pivots: 0.004653
+Total Time: 456.708206
+
+FJ Original multiprocessing using 4000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 90.640780
+Error matrix Calculation: 28.631519
+Find the Pivots: 0.000018
+Total Time: 119.272317
+
+Pivots:  [704, 1521, 2294, 3126]
+FJ new multiprocessing using 4000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 2.358819
+Error matrix Calculation: 312.619225
+Find the Pivots: 0.031361
+Total Time: 315.009405
+
+Pivots:  [704, 1521, 2294, 3126]
+FJ new with vectorized, single core, error matrix using 4000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 2.336540
+Error matrix Calculation: 1.040921
+Find the Pivots: 0.031205
+Total Time: 3.408666
+
+Pivots:  [25, 40, 60, 83, 94, 111]
+FJ Serial using 125 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.310638
+Error matrix Calculation: 0.070156
+Find the Pivots: 0.000149
+Total Time: 0.380943
+
+FJ Original multiprocessing using 125 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.123432
+Error matrix Calculation: 0.042575
+Find the Pivots: 0.000011
+Total Time: 0.166018
+
+Pivots:  [25, 40, 60, 83, 94, 111]
+FJ new multiprocessing using 125 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.088378
+Error matrix Calculation: 0.449640
+Find the Pivots: 0.001097
+Total Time: 0.539115
+
+Pivots:  [25, 40, 60, 83, 94, 111]
+FJ new with vectorized, single core, error matrix using 125 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.074727
+Error matrix Calculation: 0.024561
+Find the Pivots: 0.000984
+Total Time: 0.100272
+
+Pivots:  [28, 62, 96, 136, 179, 214]
+FJ Serial using 250 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 1.261722
+Error matrix Calculation: 0.282029
+Find the Pivots: 0.000316
+Total Time: 1.544067
+
+FJ Original multiprocessing using 250 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.508556
+Error matrix Calculation: 0.175621
+Find the Pivots: 0.000017
+Total Time: 0.684194
+
+Pivots:  [28, 62, 96, 136, 179, 214]
+FJ new multiprocessing using 250 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.101660
+Error matrix Calculation: 1.778903
+Find the Pivots: 0.002164
+Total Time: 1.882727
+
+Pivots:  [28, 62, 96, 136, 179, 214]
+FJ new with vectorized, single core, error matrix using 250 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.095923
+Error matrix Calculation: 0.051871
+Find the Pivots: 0.002190
+Total Time: 0.149984
+
+Pivots:  [83, 156, 229, 294, 356, 429]
+FJ Serial using 500 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 5.098741
+Error matrix Calculation: 1.150451
+Find the Pivots: 0.000604
+Total Time: 6.249796
+
+FJ Original multiprocessing using 500 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 2.123619
+Error matrix Calculation: 0.710415
+Find the Pivots: 0.000015
+Total Time: 2.834049
+
+Pivots:  [83, 156, 229, 294, 356, 429]
+FJ new multiprocessing using 500 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.138394
+Error matrix Calculation: 7.197460
+Find the Pivots: 0.004220
+Total Time: 7.340074
+
+Pivots:  [83, 156, 229, 294, 356, 429]
+FJ new with vectorized, single core, error matrix using 500 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.136234
+Error matrix Calculation: 0.108451
+Find the Pivots: 0.004106
+Total Time: 0.248791
+
+Pivots:  [138, 268, 390, 539, 684, 844]
+FJ Serial using 1000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 21.307635
+Error matrix Calculation: 4.614665
+Find the Pivots: 0.001235
+Total Time: 25.923535
+
+FJ Original multiprocessing using 1000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 6.186765
+Error matrix Calculation: 2.769574
+Find the Pivots: 0.000018
+Total Time: 8.956357
+
+Pivots:  [138, 268, 390, 539, 684, 844]
+FJ new multiprocessing using 1000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.298319
+Error matrix Calculation: 29.114502
+Find the Pivots: 0.008324
+Total Time: 29.421145
+
+Pivots:  [138, 268, 390, 539, 684, 844]
+FJ new with vectorized, single core, error matrix using 1000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.290931
+Error matrix Calculation: 0.231734
+Find the Pivots: 0.008487
+Total Time: 0.531152
+
+Pivots:  [299, 575, 876, 1160, 1429, 1723]
+FJ Serial using 2000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 91.141984
+Error matrix Calculation: 18.492162
+Find the Pivots: 0.002577
+Total Time: 109.636723
+
+FJ Original multiprocessing using 2000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 23.073494
+Error matrix Calculation: 10.975826
+Find the Pivots: 0.000019
+Total Time: 34.049339
+
+Pivots:  [299, 575, 876, 1160, 1429, 1723]
+FJ new multiprocessing using 2000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.784139
+Error matrix Calculation: 118.186001
+Find the Pivots: 0.016568
+Total Time: 118.986708
+
+Pivots:  [299, 575, 876, 1160, 1429, 1723]
+FJ new with vectorized, single core, error matrix using 2000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 0.780864
+Error matrix Calculation: 0.550387
+Find the Pivots: 0.016450
+Total Time: 1.347701
+
+Pivots:  [576, 1110, 1718, 2302, 2859, 3441]
+FJ Serial using 4000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 425.322749
+Error matrix Calculation: 77.391679
+Find the Pivots: 0.004911
+Total Time: 502.719339
+
+FJ Original multiprocessing using 4000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 101.624173
+Error matrix Calculation: 45.497029
+Find the Pivots: 0.000018
+Total Time: 147.121220
+
+Pivots:  [577, 1112, 1719, 2302, 2859, 3441]
+FJ new multiprocessing using 4000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 2.398396
+Error matrix Calculation: 479.745601
+Find the Pivots: 0.032987
+Total Time: 482.176984
+
+Pivots:  [577, 1112, 1719, 2302, 2859, 3441]
+FJ new with vectorized, single core, error matrix using 4000 values and 7 classes.
+==============================================================
+Diameter Matrix Calculation: 2.583098
+Error matrix Calculation: 1.700343
+Find the Pivots: 0.036060
+Total Time: 4.319501
+
+Pivots:  [13, 24, 44, 55, 62, 81, 99, 113]
+FJ Serial using 125 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.312262
+Error matrix Calculation: 0.092004
+Find the Pivots: 0.000179
+Total Time: 0.404445
+
+FJ Original multiprocessing using 125 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.137764
+Error matrix Calculation: 0.056040
+Find the Pivots: 0.000013
+Total Time: 0.193817
+
+Pivots:  [13, 24, 44, 55, 62, 81, 99, 113]
+FJ new multiprocessing using 125 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.077583
+Error matrix Calculation: 0.586548
+Find the Pivots: 0.001197
+Total Time: 0.665328
+
+Pivots:  [13, 24, 44, 55, 62, 81, 99, 113]
+FJ new with vectorized, single core, error matrix using 125 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.079139
+Error matrix Calculation: 0.036222
+Find the Pivots: 0.001203
+Total Time: 0.116564
+
+Pivots:  [24, 50, 91, 117, 150, 182, 206, 237]
+FJ Serial using 250 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 1.261297
+Error matrix Calculation: 0.375755
+Find the Pivots: 0.000361
+Total Time: 1.637413
+
+FJ Original multiprocessing using 250 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.559975
+Error matrix Calculation: 0.257788
+Find the Pivots: 0.000016
+Total Time: 0.817779
+
+Pivots:  [24, 50, 91, 117, 150, 182, 206, 237]
+FJ new multiprocessing using 250 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.097674
+Error matrix Calculation: 2.348107
+Find the Pivots: 0.002227
+Total Time: 2.448008
+
+Pivots:  [24, 50, 91, 117, 150, 182, 206, 237]
+FJ new with vectorized, single core, error matrix using 250 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.092673
+Error matrix Calculation: 0.063659
+Find the Pivots: 0.002196
+Total Time: 0.158528
+
+Pivots:  [50, 110, 166, 206, 267, 317, 382, 449]
+FJ Serial using 500 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 5.105245
+Error matrix Calculation: 1.512868
+Find the Pivots: 0.000736
+Total Time: 6.618849
+
+FJ Original multiprocessing using 500 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 2.157743
+Error matrix Calculation: 0.934038
+Find the Pivots: 0.000020
+Total Time: 3.091801
+
+Pivots:  [50, 110, 166, 206, 267, 317, 382, 449]
+FJ new multiprocessing using 500 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.143342
+Error matrix Calculation: 9.548857
+Find the Pivots: 0.004399
+Total Time: 9.696598
+
+Pivots:  [50, 110, 166, 206, 267, 317, 382, 449]
+FJ new with vectorized, single core, error matrix using 500 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.141666
+Error matrix Calculation: 0.140166
+Find the Pivots: 0.004371
+Total Time: 0.286203
+
+Pivots:  [119, 218, 328, 444, 544, 659, 777, 908]
+FJ Serial using 1000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 21.141684
+Error matrix Calculation: 6.078680
+Find the Pivots: 0.001365
+Total Time: 27.221729
+
+FJ Original multiprocessing using 1000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 6.172995
+Error matrix Calculation: 3.718565
+Find the Pivots: 0.000018
+Total Time: 9.891578
+
+Pivots:  [120, 218, 328, 444, 544, 659, 777, 908]
+FJ new multiprocessing using 1000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.292653
+Error matrix Calculation: 39.280806
+Find the Pivots: 0.008662
+Total Time: 39.582121
+
+Pivots:  [120, 218, 328, 444, 544, 659, 777, 908]
+FJ new with vectorized, single core, error matrix using 1000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.289754
+Error matrix Calculation: 0.303136
+Find the Pivots: 0.008718
+Total Time: 0.601608
+
+Pivots:  [213, 441, 664, 906, 1145, 1343, 1548, 1759]
+FJ Serial using 2000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 91.031125
+Error matrix Calculation: 24.382214
+Find the Pivots: 0.002599
+Total Time: 115.415938
+
+FJ Original multiprocessing using 2000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 22.735197
+Error matrix Calculation: 14.712188
+Find the Pivots: 0.000021
+Total Time: 37.447406
+
+Pivots:  [213, 441, 664, 906, 1145, 1343, 1548, 1759]
+FJ new multiprocessing using 2000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.770025
+Error matrix Calculation: 153.206763
+Find the Pivots: 0.016955
+Total Time: 153.993743
+
+Pivots:  [213, 441, 664, 906, 1145, 1343, 1548, 1759]
+FJ new with vectorized, single core, error matrix using 2000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 0.761837
+Error matrix Calculation: 0.731126
+Find the Pivots: 0.017174
+Total Time: 1.510137
+
+Pivots:  [445, 914, 1378, 1798, 2240, 2674, 3131, 3574]
+FJ Serial using 4000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 409.003925
+Error matrix Calculation: 97.669629
+Find the Pivots: 0.005096
+Total Time: 506.678650
+
+FJ Original multiprocessing using 4000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 145.355033
+Error matrix Calculation: 59.613640
+Find the Pivots: 0.000022
+Total Time: 204.968695
+
+Pivots:  [445, 914, 1378, 1798, 2240, 2674, 3131, 3574]
+FJ new multiprocessing using 4000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 2.444982
+Error matrix Calculation: 651.821999
+Find the Pivots: 0.038484
+Total Time: 654.305465
+
+Pivots:  [445, 914, 1378, 1798, 2240, 2674, 3131, 3574]
+FJ new with vectorized, single core, error matrix using 4000 values and 9 classes.
+==============================================================
+Diameter Matrix Calculation: 2.439980
+Error matrix Calculation: 2.105622
+Find the Pivots: 0.034183
+Total Time: 4.579785
+

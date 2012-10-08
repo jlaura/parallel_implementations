@@ -1,29 +1,34 @@
 from random import randint
 import fj_serial_time
 from mapclassify_time import PFisher_Jenks_MP
-import fj_new_mp_time
+import fj_new_mp_time #Non-vectorized errorMat calculation
+import fj_new_mp_time_errMatTests #Vectorized errorMat calculation
 import numpy
 import matplotlib.pyplot as plt
 
-samples = [125,250,500,1000,2000]#,4000,8000,16000]
+samples = [125,250,500,1000,2000,4000]#,8000,16000]
 classes = [ 5 , 7, 9]
 
 for k in classes:
     fj_serial_time_diam = []
     fj_pfisher_mp_diam = []
     fj_new_mp_diam = []
-    
+    fj_new_mp_errMatTests_diam = []
+
     fj_serial_time_err = []
     fj_pfisher_mp_err = []
     fj_new_mp_err = []
+    fj_new_mp_errMatTests_err = []
     
     fj_serial_time_piv = []
     fj_pfisher_mp_piv = []
     fj_new_mp_piv = []
+    fj_new_mp_errMatTests_piv = []
     
     fj_serial_time_total = []
     fj_pfisher_mp_total = []
     fj_new_mp_total = []
+    fj_new_mp_errMatTests_total = []
 
     for t in samples:
         values = [randint(0,5000) for y in range(0,t)]
@@ -68,12 +73,25 @@ for k in classes:
         print "Total Time: %f" %times[3]
         fj_new_mp_total.append(times[3])
         print 
-
+        
+        times = fj_new_mp_time_errMatTests.fisher_jenks(values, k)
+        print "FJ new with vectorized, single core, error matrix using %i values and %i classes." %(t, k) 
+        print '=============================================================='
+        print "Diameter Matrix Calculation: %f" %times[0]
+        fj_new_mp_errMatTests_diam.append(times[0])
+        print "Error matrix Calculation: %f" %times[1]
+        fj_new_mp_errMatTests_err.append(times[1])
+        print "Find the Pivots: %f" %times[2]
+        fj_new_mp_errMatTests_piv.append(times[2])
+        print "Total Time: %f" %times[3]
+        fj_new_mp_errMatTests_total.append(times[3])
+        print 
     
     #Plot the diameter matrix generation.
     plt.plot(fj_serial_time_diam ,samples, color='red', label='Serial', linewidth=2.0)
     plt.plot(fj_new_mp_diam, samples, c='green', label="Jay's Mp", linewidth=2.0)
     plt.plot(fj_pfisher_mp_diam, samples, c='blue', label='Original Mp', linewidth=2.0)
+    plt.plot(fj_new_mp_errMatTests_diam, samples, c='yellow', label='Vectorized ErrorMat', linewidth=2.0)
     plt.legend(loc='lower right')
     plt.xlabel('time(s)')
     plt.ylabel('# samples')
@@ -88,6 +106,7 @@ for k in classes:
     plt.plot(fj_serial_time_err ,samples, color='red', label='Serial', linewidth=2.0)
     plt.plot(fj_new_mp_err, samples, c='green', label="Jay's Mp", linewidth=2.0)
     plt.plot(fj_pfisher_mp_err, samples, c='blue', label='Original Mp', linewidth=2.0)
+    plt.plot(fj_new_mp_errMatTests_err, samples, c='yellow', label='Vectorized ErrorMat', linewidth=2.0)
     plt.legend(loc='lower right')
     plt.xlabel('time(s)')
     plt.ylabel('# samples')
@@ -101,6 +120,7 @@ for k in classes:
     plt.plot(fj_serial_time_piv ,samples, color='red', label='Serial', linewidth=2.0)
     plt.plot(fj_new_mp_piv, samples, c='green', label="Jay's Mp", linewidth=2.0)
     plt.plot(fj_pfisher_mp_piv, samples, c='blue', label='Original Mp', linewidth=2.0)
+    plt.plot(fj_new_mp_errMatTests_piv, samples, c='yellow', label='Vectorized ErrorMat', linewidth=2.0)
     plt.legend(loc='lower right')
     plt.xlabel('time(s)')
     plt.ylabel('# samples')
@@ -114,6 +134,7 @@ for k in classes:
     plt.plot(fj_serial_time_total ,samples, color='red', label='Serial', linewidth=2.0)
     plt.plot(fj_new_mp_total, samples, c='green', label="Jay's Mp", linewidth=2.0)
     plt.plot(fj_pfisher_mp_total, samples, c='blue', label='Original Mp', linewidth=2.0)
+    plt.plot(fj_new_mp_errMatTests_total, samples, c='yellow', label='Vectorized ErrorMat', linewidth=2.0)
     plt.legend(loc='lower right')
     plt.xlabel('time(s)')
     plt.ylabel('# samples')

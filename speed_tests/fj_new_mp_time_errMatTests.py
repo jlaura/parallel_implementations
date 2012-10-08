@@ -62,6 +62,7 @@ def initVar(varMat_):
 def fisher_jenks(values, classes=5, sort=True):
     
     if sort:
+	#pass
 	values.sort()
 	
     numVal = len(values)
@@ -88,57 +89,41 @@ def fisher_jenks(values, classes=5, sort=True):
     #Calculate the error matrix
     errorMat[0] = sharedVar.asarray()[0]
     
-    #Lets try to get this written using numpy indexing for a single processor
-    #for row in range(1,k):
+    #Error Matrix Calculation
     row = 1
-    j = classes
-    error = []
-    for x in errorMat[1:]: 
-	for m in x:
-	    print m
-	    print errorMat[row-1:row][j-1:m-1]
-	    #numpy.min(x[row-1:row][j-1:m-1] + sharedVar.asarray()[[m, j-1, -1], m]) 
-	    #error.append(m)
-    #print error
-    row += 1
+    for x in errorMat[1:]: #Get each row, save the first
+	errRow = x[row:] #Work only on the indices which will hold valid values
+	for y in range(0,len(errRow)): #Iterate through each index in errRow
+	    #print errorMat[row-1][row-1:y+row] 
+	    #print sharedVar.asarray()[:,y+row][row:y+row+1]
+	    errRow[y] = numpy.amin(errorMat[row-1][row-1:y+row] + sharedVar.asarray()[:,y+row][row:y+row+1])
+	row += 1 #Iterate the row counter to get valid slices
 
-        #for col in range(row+1,numVal):
-            #best = numpy.inf
-            #right = col
-            #while right >= row:
-                #rv = sharedVar.asarray()[right,col]
-                #e = errorMat[row-1,right-1]
-                #if  rv + e < best:
-                    #best = rv + e
-                #right -= 1
-            #errorMat[row,col] = best
-    #t2 = time.time()
+    t2 = time.time()
     
-    ##Calculate Pivots
-    #pivots = []
-    #j = k - 1
-    #col = numVal - 1
+    #Calculate Pivots
+    pivots = []
+    j = k - 1
+    col = numVal - 1
     
-    #while j > 0:
-	#ev = errorMat[j, col]
-	#pivot_search = True
-	#right = col
+    while j > 0:
+	ev = errorMat[j, col]
+	pivot_search = True
+	right = col
 	
-	#while pivot_search:
-	    #left_error = errorMat[j-1, right-1]
-	    #right_error = sharedVar.asarray()[right, col]
-	    #if left_error + right_error == ev:
-		#pivots.insert(0, right)
-		#col = right -1
-		#pivot_search = False
-	    #right -= 1
-	#j -=1
-    #t3 = time.time()
+	while pivot_search:
+	    left_error = errorMat[j-1, right-1]
+	    right_error = sharedVar.asarray()[right, col]
+	    if left_error + right_error == ev:
+		pivots.insert(0, right)
+		col = right -1
+		pivot_search = False
+	    right -= 1
+	j -=1
+    t3 = time.time()
 	
-    #print "Pivots: ", pivots
-    #return (t1-t0, t2-t1, t3-t2, t3-t0)
-if __name__ == '__main__':
-    values = numpy.arange(50)
-    fisher_jenks(values)
+    print "Pivots: ", pivots
+    return (t1-t0, t2-t1, t3-t2, t3-t0)
+
     
     
