@@ -1,18 +1,3 @@
-'''Questions:
-
-When we read from a file, can we determine the dtype from the data coming in?
-In allocation, does the dtpye have to be float for everything? 
-When segmenting what are the pro/cons of using a generator?  
-How does a generator interact with a multiprocessing pool?
-
-The pickle module - it is the reason that the memory copy is necessary, but what is it?
-
-I think that we can avoid the in memory copy, but it makes everything a lot more complex in terms of book keeping...
-
-
-
-'''
-
 import numpy
 import timeit
 import time
@@ -164,6 +149,7 @@ def fisher_jenks(values, classes=5, sort=True):
     print "Pivots: ", pivots
     return (t1-t0, t2-t1, t3-t2, t3-t0)
 
+#Not called by time_test.py
 if __name__ == '__main__':
     values = numpy.arange(10000)
     fisher_jenks(values)

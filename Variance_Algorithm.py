@@ -6,7 +6,7 @@ import time
 import multiprocessing
 import sharedmem_sample
 
-def allocate(values, classes=5, sort=False):
+def allocate(values, classes=5, sort=True):
     numClass = classes
     if sort:
         values.sort()
@@ -83,8 +83,8 @@ def initErr(errMat_):
     sharedErr = errMat_
 
 def main():
-    values = numpy.asarray([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
-    #values = numpy.arange(5000)
+    #values = numpy.asarray([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
+    values = numpy.arange(5000)
     numVal = len(values)
 
     '''Allocate all necessary memory'''
@@ -105,16 +105,29 @@ def main():
     
     del jobs[:] #Empty the jobs list
     
+    k = 5
     '''Calculate the error matrix'''
     sharedErr.asarray()[0] = sharedVar.asarray()[0]
 
-    for j in xrange(1,numClass):
-	step= len(values)/cores #Naive split of the errorMat row into equal segments
-	for k in range(0,len(values),step):
-	    p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), numVal, k+step, j))
-	    jobs.append(p)
-	    p.start()
-	    p.join() #Wait until all the processes per row are finished before iterating the row
+    for row in range(1,k):
+	for col in range(row+1,len(values)):
+	    best = numpy.inf
+	    right = col
+	    while right >= row:
+		rv = sharedVar.asarray()[right,col]
+		e = sharedErr.asarray()[row-1,right-1]
+		if  rv + e < best:
+		    best = rv + e
+		right -= 1
+	    sharedErr.asarray()[row,col] = best    
+
+    #for j in xrange(1,numClass):
+	#step= len(values)/cores #Naive split of the errorMat row into equal segments
+	#for k in range(0,len(values),step):
+	    #p = multiprocessing.Process(target=errPop, args=(sharedErr.asarray()[j], slice(k, k+step), numVal, k+step, j))
+	    #jobs.append(p)
+	    #p.start()
+	    #p.join() #Wait until all the processes per row are finished before iterating the row
 
     '''Calculate Pivots'''
     pivots = []

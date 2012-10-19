@@ -9,9 +9,9 @@ __all__=['quantile','Map_Classifier','Box_Plot','Equal_Interval','Fisher_Jenks',
 from pysal.common import *
 import time
 import ctypes
-import pyopencl as cl
+#import pyopencl as cl
 import multiprocessing as mp
-import pp
+#import pp
 from math import sqrt
 
 K = 5 # default number of classes in any map scheme with this as an argument
@@ -560,7 +560,7 @@ def computeError(args):
     return idx, res
 
 def _pfisher_jenks_mp(values, classes=5, sort=True):
-
+    print "FJ"
     if sort:
         values.sort()
 
@@ -2309,15 +2309,17 @@ if __name__ == '__main__':
 
     # data from hartigan 1975
 
-    x=[12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, 10.4,
-            10.5, 10.2, 10.0, 9.9]
-    x = np.array(x)
+    #x=[12,10.8, 11, 10.8, 10.8, 10.8, 10.6, 10.8, 10.3, 10.3, 10.3, 10.4,
+            #10.5, 10.2, 10.0, 9.9]
+    #x = np.array(x)
 
+    x = numpy.arange(5000)
     # stage 1
-    n = len(x)
-    Diameter = np.zeros((n,n),'float')
-    for i in range(n-1):
-        for j in range(i+1,n):
-            Diameter[i,j] = x[i,j+1].var()
+    #n = len(x)
+    #Diameter = np.zeros((n,n),'float')
+    #for i in range(n-1):
+        #for j in range(i+1,n):
+            #Diameter[i,j] = x[i,j+1].var()
 
 
+    PFisher_Jenks_MP(x)
