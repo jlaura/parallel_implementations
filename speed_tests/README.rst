@@ -6,10 +6,10 @@ These are the graphical results of the speed tests.  Text results show that pivo
 
 time_test2.py runs just the newest test.  For this test the following were implemented::
 
-    *errorMat is in a sharedmem array
-    *sharedmem arrays are not duplicating memory
+    * errorMat is in a sharedmem array
+    * sharedmem arrays are not duplicating memory
     
-..note:: 
+.. note:: 
     Non-duplicating sharedmem needs to be tested.  It is much more naive than the original implementation.  I think it should be fine, reading the documentation, but needs testing with real data.
     
 .. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/TotalTime_5_classes.png
