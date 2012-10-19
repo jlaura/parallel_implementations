@@ -11,7 +11,7 @@ time_test2.py runs just the newest test.  For this test the following were imple
     
     ..note:: This needs to be tested.  It is much more naive than the original implementation.  I think it should be fine, reading the documentation, but needs testing with real data.
     
-.. image:: TotalTime_5_classes.png
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/TotalTime_5_classes.png
 
 My implementations duplicate memory briefly as memmove() is called.
 
@@ -24,9 +24,10 @@ Questions
 
 1. When we read from a file, can we determine the dtype from the data coming in?  - maybe with regex?
 
-2. In allocation, does the dtpye have to be float for everything? - This goes hand in hand with #1.  If we do not have to exist in float, then n can obviously get a lot larger.
+2. In allocation, does the dtpye have to be float for everything? - This goes hand in hand with 1.  If we do not have to exist in float, then n can obviously get a lot larger.
 
 3. When segmenting what are the pro/cons of using a generator?  - I commented out a half-baked function that does the segmenting.  As a series of sub-questions:
+
     a. We use iterators by default - they are easy.
     b. When is a generator appropriate?
     c. What about using 'with closing'?
