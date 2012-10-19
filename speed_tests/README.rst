@@ -11,11 +11,11 @@ time_test2.py runs just the newest test.  For this test the following were imple
     
     ..note:: This needs to be tested.  It is much more naive than the original implementation.  I think it should be fine, reading the documentation, but needs testing with real data.
     
-.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/TotalTime_5_classes.png
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/TotalTime_5_classes.png
 
 My implementations duplicate memory briefly as memmove() is called.
 
-.. image:: TotalTime_highSample.png
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/TotalTime_highSample.png
 
 This implementation does not make a in memory copy.  When n > 8000, cache thrashing occurs, I think.  This is with approximately 3.2GB of memory free on a 4GB machine.
      
