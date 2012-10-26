@@ -7,8 +7,8 @@ import fj_vectorized_time_sharedMem
 import numpy
 import matplotlib.pyplot as plt
 
-samples = [125,250,500,1000,2000,4000,8000]#,16000]
-classes = [ 5 ]#, 7, 9]
+samples = [125,250,500,1000,2000,4000,8000,16000]
+classes = [ 5 , 7, 9]
 
 for k in classes:
     fj_new_mp_errMatTests_diam = []

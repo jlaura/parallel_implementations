@@ -1,0 +1,104 @@
+Pivots:  [32, 53, 82, 108]
+FJ new with vectorized, single core, error matrix using 125 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.056998
+Error matrix Calculation: 0.012458
+Find the Pivots: 0.000706
+Total Time: 0.070162
+
+Pivots:  [32, 53, 82, 108]
+FJ vectorized, single core, error matrix, numpy from buffer, using 125 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.053618
+Error matrix Calculation: 0.008410
+Find the Pivots: 0.000135
+Total Time: 0.062163
+
+Pivots:  [43, 89, 134, 190]
+FJ new with vectorized, single core, error matrix using 250 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.077568
+Error matrix Calculation: 0.027159
+Find the Pivots: 0.001581
+Total Time: 0.106308
+
+Pivots:  [43, 89, 134, 190]
+FJ vectorized, single core, error matrix, numpy from buffer, using 250 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.072158
+Error matrix Calculation: 0.018051
+Find the Pivots: 0.000271
+Total Time: 0.090480
+
+Pivots:  [96, 202, 302, 396]
+FJ new with vectorized, single core, error matrix using 500 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.110928
+Error matrix Calculation: 0.053546
+Find the Pivots: 0.003104
+Total Time: 0.167578
+
+Pivots:  [96, 202, 302, 396]
+FJ vectorized, single core, error matrix, numpy from buffer, using 500 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.113826
+Error matrix Calculation: 0.038393
+Find the Pivots: 0.000492
+Total Time: 0.152711
+
+Pivots:  [210, 422, 605, 816]
+FJ new with vectorized, single core, error matrix using 1000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.251916
+Error matrix Calculation: 0.117828
+Find the Pivots: 0.006063
+Total Time: 0.375807
+
+Pivots:  [210, 422, 605, 816]
+FJ vectorized, single core, error matrix, numpy from buffer, using 1000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.250978
+Error matrix Calculation: 0.086507
+Find the Pivots: 0.000982
+Total Time: 0.338467
+
+Pivots:  [419, 835, 1216, 1604]
+FJ new with vectorized, single core, error matrix using 2000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.650570
+Error matrix Calculation: 0.283306
+Find the Pivots: 0.012198
+Total Time: 0.946074
+
+Pivots:  [419, 835, 1216, 1604]
+FJ vectorized, single core, error matrix, numpy from buffer, using 2000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 0.655570
+Error matrix Calculation: 0.221386
+Find the Pivots: 0.001913
+Total Time: 0.878869
+
+Pivots:  [811, 1630, 2437, 3254]
+FJ new with vectorized, single core, error matrix using 4000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 2.063352
+Error matrix Calculation: 0.800367
+Find the Pivots: 0.024521
+Total Time: 2.888240
+
+Pivots:  [811, 1630, 2437, 3254]
+FJ vectorized, single core, error matrix, numpy from buffer, using 4000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 2.050104
+Error matrix Calculation: 0.676006
+Find the Pivots: 0.003890
+Total Time: 2.730000
+
+Pivots:  [1620, 3196, 4771, 6412]
+FJ new with vectorized, single core, error matrix using 8000 values and 5 classes.
+==============================================================
+Diameter Matrix Calculation: 7.227266
+Error matrix Calculation: 3.022057
+Find the Pivots: 0.049271
+Total Time: 10.298594
+
