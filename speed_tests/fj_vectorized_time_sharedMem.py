@@ -2,9 +2,11 @@ import numpy
 import timeit
 import time
 import multiprocessing
-import sharedmem_sample
 import ctypes
 import warnings
+
+#profiling
+import resource
 
 #Suppress the divide by zero errors
 warnings.filterwarnings('ignore', category=RuntimeWarning)
@@ -69,21 +71,6 @@ def calcVar(arrRow, lenValues):
     return ((numpy.cumsum(numpy.square(arrRow))) - \
             ((numpy.cumsum(arrRow)*numpy.cumsum(arrRow)) / (n)))
 
-    
-#def segment(errRowLength, step):
-    #'''This function returns a list of tuples which store the start and stop
-    #for each errorRow.  Start and stop are necesary to allow multiprocessing.'''
-
-    ## 0 1 2 3 4 5 6 7 8 9
-    
-    #segments = []
-    #print errRowLength
-    #for x in range(0, errRowLength, step):
-	#print x
-	#tple = (x, x+step)
-	#segments.append(tple)
-    #return segments
-
 def fisher_jenks(values, classes=5, sort=True):
     
     if sort:
@@ -101,17 +88,20 @@ def fisher_jenks(values, classes=5, sort=True):
     step = numVal // cores
 
     t0 = time.time()
+    
     #Calculate the variance matrix
     jobs = []
     for i in range(0,len(values),step):
 	p = multiprocessing.Process(target=fj,args=(sharedVar,slice(i, i+step),values, i))
 	jobs.append(p) 
-	'''ToDO - This is redundant: either iterate over the list, or remove it, but this does nothing.'''
-	p.start()
-	p.join()
+    for job in jobs:
+	job.start()
+    for job in jobs:
+	job.join()
     del jobs[:], p
+
     t1 = time.time()
-    
+
     #Calculate the error matrix
     sharedErr[0] = sharedVar[0]
     
@@ -122,7 +112,6 @@ def fisher_jenks(values, classes=5, sort=True):
 	for y in range(0,len(errRow)):
 	    errRow[y] = numpy.amin(sharedErr[row-1][row-1:y+row] + sharedVar[:,y+row][row:y+row+1])
 	row += 1
-
     t2 = time.time()
 
     #Calculate Pivots
@@ -144,14 +133,18 @@ def fisher_jenks(values, classes=5, sort=True):
 		pivot_search = False
 	    right -= 1
 	j -=1
+    
     t3 = time.time()
+    m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 	
     print "Pivots: ", pivots
-    return (t1-t0, t2-t1, t3-t2, t3-t0)
+    return (t1-t0, t2-t1, t3-t2, t3-t0,m)
 
 #Not called by time_test.py
 if __name__ == '__main__':
-    values = numpy.arange(10000)
+    
+    #values = numpy.arange(4000)
+    values = ([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
     fisher_jenks(values)
     
     

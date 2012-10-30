@@ -76,20 +76,86 @@ def calcVar(arrRow, lenValues):
             ((numpy.cumsum(arrRow)*numpy.cumsum(arrRow)) / (n)))
 
     
-#def segment(errRowLength, step):
-    #'''This function returns a list of tuples which store the start and stop
-    #for each errorRow.  Start and stop are necesary to allow multiprocessing.'''
+def segment(errRowLength):
+    '''This function returns a list of tuples which store the optimal start and stop
+    for each errorRow.  
 
-    ## 0 1 2 3 4 5 6 7 8 9
+    Assume a row of length 10:
+    {0 1 2 3 4 5 6 7 8 9}
     
-    #segments = []
-    #print errRowLength
-    #for x in range(0, errRowLength, step):
-	#print x
-	#tple = (x, x+step)
-	#segments.append(tple)
-    #return segments
+    The total number of calculations per index = i+1, where i is the index.
+    
+    Let k = the number of available cores (workers), 4.
+    
+    We know that the total number of calculations, assuming k=1, is 55:
+    
+    >>> x
+    array([ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10])
+    >>> numpy.cumsum(x)
+    array([ 1,  3,  6, 10, 15, 21, 28, 36, 45, 55])
+    
+    Therefore, the maximum cost = 55, when k=1
+               the minimum cost = 10, when k= 7 {1,2,3,4}, {5}, {6}, {7}, {8}, {9}, {10}
+	       
+    The goal is to find the minimum cost where k = 4.
+    
+    Perform a binary search then, using the mid-point.
+    mp = 10 + (55-10/2) = 32.5
+    
+    Therefore k=1 as above, k=7 as above, & k = 2:
+    
+    {1,2,3,4,5,6,7}, {8,9,10}
+    
+    Since k = 2 and we need k = 4,we can find a better minimum in the lower half.
+    
+    We recalculate the midpoint using the lower half.
 
+    midpoint = 10 + (32.5-10/2) = 21.25
+    
+    k=7 @ min cost
+    k=2 @ 32.5
+    k = 3 @ {1,2,3,4,5,6}, {7,8}, {9,10}
+    
+    Since k = 3 and we need k = 4, we can find a better minimum in the lower half
+    
+    midpoint = 10+(21.25-10/2) = 15.625
+    k = 7 @ min cost
+    k = 3 @ 21.25
+    k = 5 @ {1,2,3,4,5}, {6,7}, {8}, {9}, {10}
+    
+    Since k = 5 and we need k = 4, we can find a better minimum in the upper half
+    
+    midpoint = 15.625 + (21.25-15.625/2) = 18.4375
+    k = 3 @ 21.25
+    k = 5 @ 15.625
+    k =  {1,2,3,4,5}, {6,7}, {8,9}, {10}
+    
+    Success!  The ideal breakdown of the above row is to have segments with a cumsum of 18 or less.
+    
+    '''
+
+    def getK(maxlength):
+	print maxlength
+	exit()
+	return k
+	
+    
+    sumArr = numpy.arange(1,errRowLength)
+    high = numpy.sum(sumArr)
+    low = sumArr[-1]
+
+    while low < high:
+	mid = low + (high-low)/2
+	print high, low, mid
+	k = getK(mid)
+	if step == k:
+	    high = low
+	elif step < k:
+	    high = mid
+	else:
+	    low = mid+1
+    
+    print low
 def err(row,y,step, lenrow):
     '''This function computes the error on a segment of each error row, from the error matrix.  
     The function is provided with the row number, starting index, step size, and total row length.
@@ -138,6 +204,7 @@ def fisher_jenks(values, classes=5, sort=True):
     row = 1    
     for x in sharedErr[1:]:
 	errRow = x[row:]
+	segments = segment(len(errRow))
 	#Initialize the errorRow as a global for multiprocessing writes
 	initErrRow(errRow)
 	
@@ -181,7 +248,6 @@ def fisher_jenks(values, classes=5, sort=True):
 	
     print "Pivots: ", pivots
     m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-
     return (t1-t0, t2-t1, t3-t2, t3-t0, m)
 
 #Not called by time_test.py

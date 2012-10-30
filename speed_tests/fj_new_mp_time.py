@@ -123,3 +123,7 @@ def fisher_jenks(values, classes=5, sort=True):
 	
     print "Pivots: ", pivots
     return (t1-t0, t2-t1, t3-t2, t3-t0)
+
+if __name__ == '__main__':
+    values = numpy.arange(4000)
+    fisher_jenks(values)

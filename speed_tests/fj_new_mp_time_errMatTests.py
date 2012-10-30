@@ -5,6 +5,11 @@ import multiprocessing
 import sharedmem_sample
 import warnings
 
+'''Questions:
+
+posix.waitpid - I believe that this is not actually forking.wait(), but the calls that happen in another thread / process.  The most time is therefore currently spent multiprocessing - is that correct?
+'''
+
 #Suppress the divide by zero errors
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
@@ -81,8 +86,10 @@ def fisher_jenks(values, classes=5, sort=True):
     for i in range(0,len(values),step):
 	p = multiprocessing.Process(target=fj, args=(sharedVar, slice(i, i+step), values, i))
 	jobs.append(p)
-	p.start()
-	p.join()
+	
+    for job in jobs:
+	job.start()
+	
     del jobs[:] #Empty the jobs list
     t1 = time.time()
     
@@ -125,5 +132,7 @@ def fisher_jenks(values, classes=5, sort=True):
     print "Pivots: ", pivots
     return (t1-t0, t2-t1, t3-t2, t3-t0)
 
-    
+if __name__ == '__main__':
+    values = numpy.arange(4000)
+    fisher_jenks(values)
     
