@@ -42,11 +42,11 @@ The majority of the computation time is spent in numpy.amin() indicating that ev
 
 Error Matrix
 -------------
-.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/ErrorMatrix_5_classes.png
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/FINAL_ErrorMatrix_5_classes.png
 
-.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/ErrorMatrix_5_classes.png
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/FINAL_ErrorMatrix_7_classes.png
 
-.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/ErrorMatrix_5_classes.png
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/FINAL_ErrorMatrix_9_classes.png
 
 To illustrate the 'cost' of multiprocessing, this next image compares the vectorized calculation of the error matrix in serial and multicored.  Waiting of individual cores to finish comprises the majority of the multiprocessing overhead - not the spawning of the threads.
 
