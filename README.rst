@@ -15,3 +15,6 @@ These figures show the potential overhead introduced by multiprocessing.  The ma
 Large n values on a 12 core machine
 ------------------------------------
 .. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/Cortez_Test.png
+
+
+Question: Should these graphs be showing T / T1, where T is the initial compute time and T1 is the improved compute time?
