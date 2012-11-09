@@ -11,3 +11,7 @@ For all tests above k=5.  An increase in k impacts total processing time little.
 .. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/Figure2.png
 
 These figures show the potential overhead introduced by multiprocessing.  The majority of the speed increase is not due to parallelization, but vectorization using NumPy.
+
+Large n values on a 12 core machine
+------------------------------------
+.. image:: https://github.com/jlaura/sharedmem-arrays/raw/master/speed_tests/Cortez_Test.png
