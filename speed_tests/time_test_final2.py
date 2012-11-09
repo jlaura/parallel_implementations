@@ -10,56 +10,21 @@ samples = [125,250,500,1000,2000,4000]#,8000,16000]
 classes = [ 5 ]#, 7, 9]
 
 for k in classes:
-    fj_serial_time_diam = []
-    fj_pfisher_mp_diam = []
     fj_vec_only_diam=[]
     fj_new_mp_multi_diam = []
 
-    fj_serial_time_err = []
-    fj_pfisher_mp_err = []
     fj_vec_only_err=[]
     fj_new_mp_multi_err = []
 
-    fj_serial_time_piv = []
-    fj_pfisher_mp_piv = []
     fj_vec_only_piv=[]
     fj_new_mp_multi_piv = []
     
-    fj_serial_time_total = []
-    fj_pfisher_mp_total = []
     fj_vec_only_total=[]
     fj_new_mp_multi_total = [] 
 
     for t in samples:
         values = [randint(0,5000) for y in range(0,t)]
         #values = ([120,108, 110, 108, 108, 108, 106, 108, 103, 103, 103, 104, 105, 102, 100, 99])
-        
-        times = fj_serial_time.fisher_jenks(values, k)
-        print "FJ Serial using %i values and %i classes." %(t, k)
-        print '=============================================================='
-        print "Diameter Matrix Calculation: %f" %times[0]
-        fj_serial_time_diam.append(times[0])
-        print "Error matrix Calculation: %f" %times[1]
-        fj_serial_time_err.append(times[1])
-        print "Find the Pivots: %f" %times[2]
-        fj_serial_time_piv.append(times[2])
-        print "Total Time: %f" %times[3]
-        fj_serial_time_total.append(times[3])
-        print 
-        
-        fj = PFisher_Jenks_MP(numpy.asarray(values), k)
-        times = fj.time
-        print "FJ Original multiprocessing using %i values and %i classes." %(t, k) 
-        print '=============================================================='
-        print "Diameter Matrix Calculation: %f" %times[0]
-        fj_pfisher_mp_diam.append(times[0])
-        print "Error matrix Calculation: %f" %times[1]
-        fj_pfisher_mp_err.append(times[1])
-        print "Find the Pivots: %f" %times[2]
-        fj_pfisher_mp_piv.append(times[2])
-        print "Total Time: %f" %times[3]
-        fj_pfisher_mp_total.append(times[3])
-        print 
         
         times = fj_refactored_vect_only_sp.fisher_jenks(values, k)
         print "FJ Vectorized using %i values and %i classes." %(t, k) 
@@ -75,7 +40,7 @@ for k in classes:
         print 
         
         times = fj_refactored_sp.fisher_jenks(values,k)
-        print "FJ Vectorized & MP using %i values and %i classes." %(t, k)
+        print "FJ vectorized only using %i values and %i classes." %(t, k)
         print '=============================================================='
         print "Diameter Matrix Calculation: %f" %times[0]
         fj_new_mp_multi_diam.append(times[0])
@@ -92,8 +57,6 @@ for k in classes:
     
     #Plot the diameter matrix generation.
     a = fig.add_subplot(2,2,1)
-    a.plot(samples, fj_serial_time_diam, color='red', label='Serial', linewidth=1.5)
-    a.plot(samples, fj_pfisher_mp_diam, c='blue', label='Original Mp', linewidth=1.5)
     a.plot(samples, fj_vec_only_diam, c='orange', label='Vectorized', linewidth=1.5)
     a.plot(samples, fj_new_mp_multi_diam, c='green', label='Vectorized & Mp', linewidth=1.5)
     a.legend(loc='upper left')
@@ -108,8 +71,6 @@ for k in classes:
     
     #Plot the error matrix generation
     a = fig.add_subplot(2,2,2)
-    a.plot(samples,fj_serial_time_err, color='red', label='Serial', linewidth=1.5)
-    a.plot(samples,fj_pfisher_mp_err, c='blue', label='Original Mp', linewidth=1.5)
     a.plot(samples, fj_vec_only_err, c='orange', label='Vectorized', linewidth=1.5)
     a.plot(samples,fj_new_mp_multi_err, c='green', label='Vectorized & Mp', linewidth=1.5)
     a.legend(loc='upper left')
@@ -123,8 +84,6 @@ for k in classes:
     
     #Plot the Pivot Matrix times
     a = fig.add_subplot(2,2,3)
-    a.plot(samples, fj_serial_time_piv, color='red', label='Serial', linewidth=1.5)
-    a.plot(samples, fj_pfisher_mp_piv, c='blue', label='Original Mp', linewidth=1.5)
     a.plot(samples, fj_vec_only_piv, c='orange', label='Vectorized', linewidth=1.5)
     a.plot(samples, fj_new_mp_multi_piv, c='green', label='Vectorized & Mp', linewidth=1.5)
     a.legend(loc='upper left')
@@ -138,8 +97,6 @@ for k in classes:
     
     #Plot total time
     a = fig.add_subplot(2,2,4)
-    a.plot(samples,fj_serial_time_total, color='red', label='Serial', linewidth=1.5)
-    a.plot(samples,fj_pfisher_mp_total, c='blue', label='Original Mp', linewidth=1.5)
     a.plot(samples, fj_vec_only_total, c='orange', label='Vectorized', linewidth=1.5)
     a.plot(samples,fj_new_mp_multi_total, c='green', label='Vectorized & Mp', linewidth=1.5)
     a.legend(loc='upper left')
@@ -152,5 +109,5 @@ for k in classes:
     #plt.clf() #Clear this plot. 
     fig.tight_layout()
     a.autoscale_view()
-    fig.savefig('Figure1.png')
+    fig.savefig('Figure2.png')
     #plt.show()
