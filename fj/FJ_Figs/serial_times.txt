@@ -1,0 +1,75 @@
+Pivots:  [190, 388, 578, 782]
+Diameter Matrix Time:  13.7974159718
+Error Matrix Time:  2.42999386787
+Pivot Matrix Time:  0.00090503692627
+Total Compute Time:  16.2283148766
+Pivots:  [381, 776, 1223, 1584]
+Diameter Matrix Time:  58.6855099201
+Error Matrix Time:  9.38234996796
+Pivot Matrix Time:  0.00177812576294
+Total Compute Time:  68.0696380138
+Pivots:  [875, 1644, 2432, 3254]
+Diameter Matrix Time:  271.131350994
+Error Matrix Time:  40.0059671402
+Pivot Matrix Time:  0.0036449432373
+Total Compute Time:  311.140963078
+Pivots:  [1301, 2526, 3743, 4912]
+Diameter Matrix Time:  717.146224976
+Error Matrix Time:  87.1925499439
+Pivot Matrix Time:  0.00527405738831
+Total Compute Time:  804.344048977
+Pivots:  [1630, 3299, 4901, 6465]
+Diameter Matrix Time:  1394.63674998
+Error Matrix Time:  172.423195839
+Pivot Matrix Time:  0.00795006752014
+Total Compute Time:  1567.06789589
+Pivots:  [148, 294, 441, 587, 736, 865]
+Diameter Matrix Time:  13.2766780853
+Error Matrix Time:  3.56013679504
+Pivot Matrix Time:  0.000959157943726
+Total Compute Time:  16.8377740383
+Pivots:  [296, 577, 842, 1130, 1427, 1712]
+Diameter Matrix Time:  59.1833441257
+Error Matrix Time:  14.8163218498
+Pivot Matrix Time:  0.0021390914917
+Total Compute Time:  74.0018050671
+Pivots:  [511, 1063, 1627, 2187, 2764, 3399]
+Diameter Matrix Time:  269.988568068
+Error Matrix Time:  64.3174130917
+Pivot Matrix Time:  0.00469994544983
+Total Compute Time:  334.310681105
+Pivots:  [790, 1648, 2501, 3369, 4249, 5115]
+Diameter Matrix Time:  696.72951293
+Error Matrix Time:  146.950226068
+Pivot Matrix Time:  0.00698590278625
+Total Compute Time:  843.686724901
+Pivots:  [1229, 2391, 3507, 4682, 5892, 6989]
+Diameter Matrix Time:  1355.23065901
+Error Matrix Time:  242.296875
+Pivot Matrix Time:  0.00840878486633
+Total Compute Time:  1597.53594279
+Pivots:  [98, 216, 327, 441, 534, 640, 774, 883]
+Diameter Matrix Time:  13.5342371464
+Error Matrix Time:  4.52848601341
+Pivot Matrix Time:  0.000951766967773
+Total Compute Time:  18.0636749268
+Pivots:  [211, 397, 598, 865, 1074, 1311, 1543, 1793]
+Diameter Matrix Time:  61.4555139542
+Error Matrix Time:  20.4420311451
+Pivot Matrix Time:  0.00221490859985
+Total Compute Time:  81.8997600079
+Pivots:  [446, 858, 1295, 1727, 2146, 2581, 3049, 3509]
+Diameter Matrix Time:  278.911404133
+Error Matrix Time:  79.0320079327
+Pivot Matrix Time:  0.00425291061401
+Total Compute Time:  357.947664976
+Pivots:  [691, 1403, 2118, 2754, 3395, 4017, 4683, 5341]
+Diameter Matrix Time:  704.550989866
+Error Matrix Time:  179.08477211
+Pivot Matrix Time:  0.00637197494507
+Total Compute Time:  883.642133951
+Pivots:  [905, 1760, 2644, 3572, 4400, 5261, 6195, 7109]
+Diameter Matrix Time:  1398.4368279
+Error Matrix Time:  326.913325071
+Pivot Matrix Time:  0.00889801979065
+Total Compute Time:  1725.35905099

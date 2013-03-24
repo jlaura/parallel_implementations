@@ -38,10 +38,11 @@ class pCompactRegions:
         # 5: CentroidY
         # 6: dissimilairty value
     def _init_(self):
-        print "initialization"
+        #print "initialization"
+        pass
     #read dbf file using pysal
     def __init__(self, n, p, filename):
-        print "initialize n basic unit, p regions and contiguity/attribute data"
+        #print "initialize n basic unit, p regions and contiguity/attribute data"
         self.p  = p
         self.n = n
         self.filename = filename
@@ -123,7 +124,7 @@ class pCompactRegions:
                         raise
         except StopIteration:
             print "Timeout"
-        print "finished dealing!"
+        #print "finished dealing!"
     def computeCompactness2(self, area, inertia):
         pi = 3.1415926
         return (area**2)/(2*pi*inertia)
@@ -253,7 +254,7 @@ class pCompactRegions:
 
         return graspparameter
     def greedy(self):
-        print "start greedy"
+        #print "start greedy"
         greedyParameters = [[-99999999, 0, 0, 0, 0, 0, 0]]*len(self.Zstate) #record for the *FUTURE* state of MZ, what is the area and perimeter
         globalgreedyParameter = [-99999999, 0, 0, 0, 0, 0, 0, 0] #Structure the same as greedyParameters, #7: index of regions namely index of Zstate
         try:
