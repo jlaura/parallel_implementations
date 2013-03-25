@@ -15,13 +15,10 @@ cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru',
 cores = mp.cpu_count() 
 
 #P-Compact Variables
-n = 100
+n = 441
 p = 4
-soln_space_size = 200
-inputds = "n100.dbf" #To be replaced with dynamic test data
-
-#Test Data   
- 
+soln_space_size = 4
+inputds = "n20x20.dbf" #To be replaced with dynamic test data
 
 def checkConnectivity(i, MZi, ZState, M):
     # if moving i from MZi will cause disconnected TAZ blocks, then no action is taken for this TAZ
@@ -202,7 +199,8 @@ soln = manager.dict()
 def initialization(i, n,p,inputds,soln):
     '''This function performs phase I of the algorithm'''
     pcompact = pc.pCompactRegions(n,p,inputds)
-    pcompact.getSeeds_from_lattice([11,17,81,87])
+    #pcompact.getSeeds_from_lattice([11,17,81,87]) #For 10x10
+    pcompact.getSeeds_from_lattice([109,163,320,375]) #For 20x20
     pcompact.dealing(19)
     pcompact.greedy()
     soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M, pcompact]
@@ -217,9 +215,9 @@ for job in jobs:
     job.start()
 for job in jobs:
     job.join()
+    
 t2 = time.time()
 print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
-
 print "Starting to save the output IFS as PNG."
 initial_avg = []
 #Plot the output of the initial phase and save as a PNG

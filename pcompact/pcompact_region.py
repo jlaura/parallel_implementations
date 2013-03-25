@@ -54,12 +54,13 @@ class pCompactRegions:
         #ID, SARS, X, Adjacent
         for row in db:
             #dbf's structure: ID, SAR1, Uniform2, Adjacent. Touching
-            self.M[int(row[0])] = [int(s) for s in row[3].split(',')] #column index 3 gives the list of basic units which are adjacent
+            M_list = [int(s) for s in row[3].split(',')]
+            M_list.sort()
+            self.M[int(row[0])] = M_list #column index 3 gives the list of basic units which are adjacent
             self.V[int(row[0])] = row[1] #column index 1 #value to compute dissimilarity
             self.values.append([row[1], int(row[0])])
             self.allUnits.append(int(row[0]))
             self.T[int(row[0])] = [float(i) for i in [row[5]**2/(2*3.1415926*row[9]), row[5],row[6],row[9],row[7],row[8]]]
-
     def getSeeds_from_lattice(self, seeds): # randomly select seeds to grow regions
         for i in range(len(seeds)):
             self.Zstate[i] = [seeds[i]]
