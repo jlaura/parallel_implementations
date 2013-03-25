@@ -244,7 +244,6 @@ for x in range(len(soln)):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     axis_size =  int(sqrt(n))
-    print axis_size, soln[0][0]
     #Reshape the flat unit membership into a lattice and save.
     local_img = []
     for element in soln[x][0].itervalues(): 

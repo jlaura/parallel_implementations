@@ -123,7 +123,6 @@ class pCompactRegions:
                         raise
         except StopIteration:
             print "Timeout"
-        print self.unitRegionMemship
         #print "finished dealing!"
     def computeCompactness2(self, area, inertia):
         pi = 3.1415926
