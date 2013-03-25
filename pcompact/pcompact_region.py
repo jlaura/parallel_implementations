@@ -54,9 +54,7 @@ class pCompactRegions:
         #ID, SARS, X, Adjacent
         for row in db:
             #dbf's structure: ID, SAR1, Uniform2, Adjacent. Touching
-            M_list = [int(s) for s in row[3].split(',')]
-            M_list.sort()
-            self.M[int(row[0])] = M_list #column index 3 gives the list of basic units which are adjacent
+            self.M[int(row[0])] = [int(s) for s in row[3].split(',')] #column index 3 gives the list of basic units which are adjacent
             self.V[int(row[0])] = row[1] #column index 1 #value to compute dissimilarity
             self.values.append([row[1], int(row[0])])
             self.allUnits.append(int(row[0]))
@@ -125,6 +123,7 @@ class pCompactRegions:
                         raise
         except StopIteration:
             print "Timeout"
+        print self.unitRegionMemship
         #print "finished dealing!"
     def computeCompactness2(self, area, inertia):
         pi = 3.1415926

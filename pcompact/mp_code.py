@@ -2,6 +2,7 @@ import multiprocessing as mp
 import pcompact_region as pc
 import numpy as np
 import random
+import sys
 
 #Testing
 import time
@@ -10,15 +11,34 @@ from pylab import imsave
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
-  
+
 #This will use all cores, we can use any integer < max(cores). 
 cores = mp.cpu_count() 
 
-#P-Compact Variables
-n = 441
+#Variables
+if len(sys.argv) < 3:
+    print "The script requires a .dbf file whose name begins with the number of elements in a row."
+    print "The script also requires that you supply an integer number of IFS to generate."
+    exit(0)
+elif sys.argv[1].split(".")[1] != 'dbf':
+    print "This script must target the shapefile dbf."
+    exit(0)
+inputds = sys.argv[1]
+n = int(inputds.split("x")[0]) ** 2
 p = 4
 soln_space_size = 4
-inputds = "n20x20.dbf" #To be replaced with dynamic test data
+if sqrt(n) == 4:
+    seed = [0,6,12,14]
+elif sqrt(n) == 8:
+    seed = [17,28,41,54]
+elif sqrt(n) == 16:
+    seed = [68,108,190,211]
+elif sqrt(n) == 32:
+    seed = [163,441,594,899]
+elif sqrt(n) == 64:
+    seed = [717,1786,2819,3703]
+elif sqrt(n) == 128:
+    seed = [1158,4960,12790,15364]
 
 def checkConnectivity(i, MZi, ZState, M):
     # if moving i from MZi will cause disconnected TAZ blocks, then no action is taken for this TAZ
@@ -196,11 +216,10 @@ manager = mp.Manager() #Manages the low level locks
 soln = manager.dict()
 
 
-def initialization(i, n,p,inputds,soln):
+def initialization(i, n,p,inputds,soln, seed):
     '''This function performs phase I of the algorithm'''
     pcompact = pc.pCompactRegions(n,p,inputds)
-    #pcompact.getSeeds_from_lattice([11,17,81,87]) #For 10x10
-    pcompact.getSeeds_from_lattice([109,163,320,375]) #For 20x20
+    pcompact.getSeeds_from_lattice(seed)
     pcompact.dealing(19)
     pcompact.greedy()
     soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M, pcompact]
@@ -209,7 +228,7 @@ def initialization(i, n,p,inputds,soln):
 print "Starting phase I"
 t1 = time.time()
 #Multiprocessing phase I
-jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln)) for i in range(soln_space_size)]
+jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed)) for i in range(soln_space_size)]
 
 for job in jobs:
     job.start()
@@ -225,6 +244,7 @@ for x in range(len(soln)):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     axis_size =  int(sqrt(n))
+    print axis_size, soln[0][0]
     #Reshape the flat unit membership into a lattice and save.
     local_img = []
     for element in soln[x][0].itervalues(): 

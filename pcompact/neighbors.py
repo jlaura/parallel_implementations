@@ -140,13 +140,3 @@ for shapefile in output_shapefiles:
         inlyr.SetFeature(feat)
         feat = inlyr.GetNextFeature()
 
-w = pysal.rook_from_shapefile(output_shapefiles[-1])
-infile = ogr.Open(output_shapefiles[-1], 1)
-inlyr = infile.GetLayerByIndex(0)
-counter = 0
-feat = inlyr.GetNextFeature()
-while feat is not None:
-    feat.SetField('Adjacent', str(w.neighbors[counter]).split("[")[1].split("]")[0])
-    counter += 1
-    inlyr.SetFeature(feat)
-    feat = inlyr.GetNextFeature()
