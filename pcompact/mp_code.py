@@ -23,10 +23,16 @@ if len(sys.argv) < 3:
 elif sys.argv[1].split(".")[1] != 'dbf':
     print "This script must target the shapefile dbf."
     exit(0)
+    
 inputds = sys.argv[1]
 n = int(inputds.split("x")[0]) ** 2
 p = 4
-soln_space_size = 4
+soln_space_size = int(sys.argv[2])
+dealing_int = (n - 45 ) / p
+
+print "Problem Size | number of regions | number of IFS | dealing integer"
+print "        ",n,"            ", p,"            ", soln_space_size,"               " ,dealing_int
+
 if sqrt(n) == 4:
     seed = [0,6,12,14]
 elif sqrt(n) == 8:
@@ -216,19 +222,19 @@ manager = mp.Manager() #Manages the low level locks
 soln = manager.dict()
 
 
-def initialization(i, n,p,inputds,soln, seed):
+def initialization(i, n,p,inputds,soln, seed, dealing_int):
     '''This function performs phase I of the algorithm'''
     pcompact = pc.pCompactRegions(n,p,inputds)
     pcompact.getSeeds_from_lattice(seed)
-    pcompact.dealing(19)
+    pcompact.dealing(dealing_int)
     pcompact.greedy()
     soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M, pcompact]
     soln[i] = soln_specs
 
-print "Starting phase I"
+#print "Starting phase I"
 t1 = time.time()
 #Multiprocessing phase I
-jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed)) for i in range(soln_space_size)]
+jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed, dealing_int)) for i in range(soln_space_size)]
 
 for job in jobs:
     job.start()
@@ -236,8 +242,10 @@ for job in jobs:
     job.join()
     
 t2 = time.time()
-print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
-print "Starting to save the output IFS as PNG."
+print "Initialization Time"
+print t2-t1
+#print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
+#print "Starting to save the output IFS as PNG."
 initial_avg = []
 #Plot the output of the initial phase and save as a PNG
 for x in range(len(soln)):
@@ -279,7 +287,7 @@ def local_search_wrapper(y, local_soln, soln, p):
     soln_specs = [urm, zs, zsp]
     local_soln[y] = soln_specs 
     
-print "Finished saving the output image, commencing phase II (local search)."
+#print "Finished saving the output image, commencing phase II (local search)."
 t3 = time.time()
 #Multiprocessing Phase II
 local_soln = manager.dict()
@@ -291,8 +299,13 @@ for job in jobs:
     job.join()
 
 t4 = time.time()
-print "Completed local search phase for {} solutions in {} seconds with {} elements.".format(soln_space_size, t4-t3, n)
-print "Saving images for solution space after local search."
+print "Local Search Time"
+print str(t4-t3)
+print
+print "Initial compactness, new compactness"
+print "************************************"
+#print "Completed local search phase for {} solutions in {} seconds with {} elements.".format(soln_space_size, t4-t3, n)
+#print "Saving images for solution space after local search."
 #Plot the output of the second phase and save as a PNG
 for x in range(len(local_soln)):
     fig = plt.figure()
@@ -318,3 +331,6 @@ for x in range(len(local_soln)):
     
     plt.grid()
     plt.savefig('Soln_' + str(x) + '_PhaseII.png', dpi=72)
+    
+    
+    print initial_avg[x], average 
