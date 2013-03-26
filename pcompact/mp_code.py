@@ -5,11 +5,11 @@ import random
 import sys
 
 #Testing
+import matplotlib
+matplotlib.use("Agg")
 import time
 from math import sqrt
 from pylab import imsave
-import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
