@@ -277,24 +277,26 @@ for x in range(len(soln)):
     plt.grid()
     plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
 
-def local_search_wrapper(y, local_soln, soln, p):
-    unitRegionMemship = soln[y][0]
-    ZState = soln[y][1]
-    ZstateProperties = soln[y][2]
-    T = soln[y][3] #We returned the class instance in the dict, so grab is back
-    M = soln[y][4] 
-    pid=mp.current_process()._identity[0]
-    rand = random.Random(pid)
-    #Initialize the local search and pack the results into a dict, as above
-    urm, zs, zsp = localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand)
-    soln_specs = [urm, zs, zsp]
-    local_soln[y] = soln_specs 
+def local_search_wrapper(i, local_soln, soln, p, step_size):
+    for y in range(i, i+step_size):
+        unitRegionMemship = soln[y][0]
+        ZState = soln[y][1]
+        ZstateProperties = soln[y][2]
+        T = soln[y][3] #We returned the class instance in the dict, so grab is back
+        M = soln[y][4] 
+        pid=mp.current_process()._identity[0]
+        rand = random.Random(pid)
+        #Initialize the local search and pack the results into a dict, as above
+        urm, zs, zsp = localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand)
+        soln_specs = [urm, zs, zsp]
+        local_soln[y] = soln_specs 
     
 #print "Finished saving the output image, commencing phase II (local search)."
 t3 = time.time()
 #Multiprocessing Phase II
 local_soln = manager.dict()
-jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p)) for i in range(len(soln))]
+step_size = len(soln) / cores
+jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p, step_size)) for i in range(0,len(soln),step_size)]
 
 for job in jobs:
     job.start()
