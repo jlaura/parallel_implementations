@@ -5,6 +5,7 @@ import random
 import sys
 
 #Testing
+import os
 import matplotlib
 matplotlib.use("Agg")
 import time
@@ -27,7 +28,7 @@ elif sys.argv[1].split(".")[1] != 'dbf':
     exit(0)
     
 inputds = sys.argv[1]
-n = int(inputds.split("x")[0]) ** 2
+n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = 4
 soln_space_size = int(sys.argv[2])
 dealing_int = (n - 45 ) / p
