@@ -286,9 +286,7 @@ for x in dealing_int:
         
         #plt.grid()
         #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
-    
-    
-        
+
     #print "Finished saving the output image, commencing phase II (local search)."
     t3 = time.time()
     #Multiprocessing Phase II
@@ -310,6 +308,8 @@ for x in dealing_int:
     #print "Completed local search phase for {} solutions in {} seconds with {} elements.".format(soln_space_size, t4-t3, n)
     #print "Saving images for solution space after local search."
     #Plot the output of the second phase and save as a PNG
+    initial_arr = np.empty(len(local_soln))
+    average_arr = np.empty(len(local_soln))
     for x in range(len(local_soln)):
         #fig = plt.figure()
         #ax = fig.add_subplot(111)
@@ -324,10 +324,10 @@ for x in dealing_int:
         
         ##Compute the initial compactness metric and add as the title
         #overallObj = 0.0
-        #for y in local_soln[x][2]:
-            #overallObj += y[0]
-        #OriAveCmpt = overallObj/p
-        #average = OriAveCmpt
+        for y in local_soln[x][2]:
+            overallObj += y[0]
+        OriAveCmpt = overallObj/p
+        average = OriAveCmpt
         #plt.title("The average compactness has increased from: \n{} --> {}".format(initial_avg[x], average), fontsize=10)
         #ax.get_xaxis().set_ticks(range(axis_size))
         #ax.get_yaxis().set_ticks(range(axis_size))
@@ -335,5 +335,6 @@ for x in dealing_int:
         #plt.grid()
         #plt.savefig('Soln_' + str(x) + '_PhaseII.png', dpi=72)
         
-        
-        print initial_avg[x], average 
+        initial_arr[x] = initial_avg[x]
+        average_arr[x] = average
+        print initial_arr, average_arr
