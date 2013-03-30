@@ -36,11 +36,7 @@ dealing_int = (n - 45 ) / p
 print "Problem Size | number of regions | number of IFS | dealing integer"
 print "        ",n,"            ", p,"            ", soln_space_size,"               " ,dealing_int
 
-if sqrt(n) == 4:
-    seed = [0,6,12,14]
-elif sqrt(n) == 8:
-    seed = [17,28,41,54]
-elif sqrt(n) == 16:
+if sqrt(n) == 16:
     seed = [68,108,190,211]
 elif sqrt(n) == 32:
     seed = [163,441,594,899]
