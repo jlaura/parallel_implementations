@@ -3,12 +3,12 @@ import sys
 import os
 from osgeo import ogr
 
-total_size = 324
+total_size = 256
 
 driver = ogr.GetDriverByName("ESRI Shapefile")
 
 output_shapefiles = []
-sizes = [18]
+sizes = [16]
 for size in sizes:
     output = "{}x{}.shp".format(size, size)
     output_shapefiles.append("{}x{}.shp".format(size, size))
@@ -126,17 +126,17 @@ poly.Destroy()
 feature.Destroy()
 output=None
 
-#for shapefile in output_shapefiles:
-    #if shapefile == '128x128.shp':
-        #continue
-    #w = pysal.rook_from_shapefile(shapefile)
-    #infile = ogr.Open(shapefile, 1)
-    #inlyr = infile.GetLayerByIndex(0)
-    #counter = 0
-    #feat = inlyr.GetNextFeature()
-    #while feat is not None:
-        #feat.SetField('Adjacent', str(w.neighbors[counter]).split("[")[1].split("]")[0])
-        #counter += 1
-        #inlyr.SetFeature(feat)
-        #feat = inlyr.GetNextFeature()
+for shapefile in output_shapefiles:
+    w = pysal.rook_from_shapefile(shapefile)
+    infile = ogr.Open(shapefile, 1)
+    inlyr = infile.GetLayerByIndex(0)
+    counter = 0
+    feat = inlyr.GetNextFeature()
+    print feat
+    while feat is not None:
+        feat.SetField('Adjacent', str(w.neighbors[counter]).split("[")[1].split("]")[0])
+        print str(w.neighbors[counter]).split("[")[1].split("]")[0]
+        counter += 1
+        inlyr.SetFeature(feat)
+        feat = inlyr.GetNextFeature()
 

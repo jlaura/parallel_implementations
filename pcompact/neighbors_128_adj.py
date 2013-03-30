@@ -1,8 +1,8 @@
 import pysal
 from osgeo import ogr
 
-w = pysal.rook_from_shapefile("128x128.shp")
-infile = ogr.Open("128x128.shp", 1)
+w = pysal.rook_from_shapefile("16x16.shp")
+infile = ogr.Open("16x16.shp", 1)
 inlyr = infile.GetLayerByIndex(0)
 counter = 0
 feat = inlyr.GetNextFeature()
