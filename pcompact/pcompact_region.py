@@ -46,6 +46,13 @@ class pCompactRegions:
         self.p  = p
         self.n = n
         self.filename = filename
+        #We have to clean out the class variables between iterations.
+        self.Zstate = []
+        self.ZstateProperties = []
+        self.unitRegionMemship = {}
+        self.regionObj = []
+        self.M = {} ; self.V = {}; self.T = {}
+        self.values = [] ; self.allUnits = []; self.TakenZones = [];
         for i in range(p):
             self.Zstate.append([]) # ID of basic units within region i
             self.ZstateProperties.append([])
@@ -60,6 +67,7 @@ class pCompactRegions:
             self.allUnits.append(int(row[0]))
             self.T[int(row[0])] = [float(i) for i in [row[5]**2/(2*3.1415926*row[9]), row[5],row[6],row[9],row[7],row[8]]]
     def getSeeds_from_lattice(self, seeds): # randomly select seeds to grow regions
+        self.unitReionMemship = {}
         for i in range(len(seeds)):
             self.Zstate[i] = [seeds[i]]
             self.ZstateProperties[i] =  self.T[seeds[i]]
