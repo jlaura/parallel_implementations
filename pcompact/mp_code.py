@@ -29,8 +29,9 @@ elif sys.argv[1].split(".")[1] != 'dbf':
     
 inputds = sys.argv[1]
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
-p = sys.argv[2]
-soln_space_size = 5000
+p = int(sys.argv[2])
+print p
+soln_space_size = 24
 if p == 4:
     dealing_int = range(4,250)
     seed = [51,59,195,204]
@@ -236,9 +237,9 @@ def local_search_wrapper(i, local_soln, soln, p, step_size):
         soln_specs = [urm, zs, zsp]
         local_soln[y] = soln_specs 
 
-for x in dealing_int:    
+for deal in dealing_int:    
     print "Problem Size | number of regions | number of IFS | dealing integer"
-    print "        ",n,"            ", p,"            ", soln_space_size,"               " ,dealing_int
+    print "        ",n,"            ", p,"            ", soln_space_size,"               " ,deal
     
     #Initial Solution Space
     manager = mp.Manager() #Manages the low level locks
@@ -247,7 +248,7 @@ for x in dealing_int:
     #print "Starting phase I"
     t1 = time.time()
     #Multiprocessing phase I
-    jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed, dealing_int)) for i in range(soln_space_size)]
+    jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed, deal)) for i in range(soln_space_size)]
     
     for job in jobs:
         job.start()
@@ -338,3 +339,4 @@ for x in dealing_int:
         initial_arr[x] = initial_avg[x]
         average_arr[x] = average
         print initial_arr, average_arr
+        print "Iteration Complete"
