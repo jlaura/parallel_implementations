@@ -30,8 +30,7 @@ elif sys.argv[1].split(".")[1] != 'dbf':
 inputds = sys.argv[1]
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = int(sys.argv[2])
-print p
-soln_space_size = 24
+soln_space_size = 4
 if p == 4:
     dealing_int = range(4,250)
     seed = [51,59,195,204]
@@ -262,7 +261,7 @@ for deal in dealing_int:
     #print "Starting to save the output IFS as PNG."
     initial_avg = []
     #Plot the output of the initial phase and save as a PNG
-    #for x in range(len(soln)):
+    for x in range(len(soln)):
         #fig = plt.figure()
         #ax = fig.add_subplot(111)
         #axis_size =  int(sqrt(n))
@@ -275,12 +274,12 @@ for deal in dealing_int:
         #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
         
         ##Compute the initial compactness metric and add as the title
-        #overallObj = 0.0
-        #for y in soln[x][2]:
-            #overallObj += y[0]
-        #OriAveCmpt = overallObj/p
-        #average = OriAveCmpt
-        #initial_avg.append(average)
+        overallObj = 0.0
+        for y in soln[x][2]:
+            overallObj += y[0]
+        OriAveCmpt = overallObj/p
+        average = OriAveCmpt
+        initial_avg.append(average)
         #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
         #ax.get_xaxis().set_ticks(range(axis_size))
         #ax.get_yaxis().set_ticks(range(axis_size))
@@ -311,7 +310,10 @@ for deal in dealing_int:
     #Plot the output of the second phase and save as a PNG
     initial_arr = np.empty(len(local_soln))
     average_arr = np.empty(len(local_soln))
+    print len(local_soln)
     for x in range(len(local_soln)):
+        print x
+        print initial_avg
         #fig = plt.figure()
         #ax = fig.add_subplot(111)
         #axis_size =  int(sqrt(len(local_soln[x][0])))
@@ -323,8 +325,8 @@ for deal in dealing_int:
         #local_img.shape = (sqrt(len(local_soln[x][0])),sqrt(len(local_soln[x][0])))
         #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
         
-        ##Compute the initial compactness metric and add as the title
-        #overallObj = 0.0
+        #Compute the initial compactness metric and add as the title
+        overallObj = 0.0
         for y in local_soln[x][2]:
             overallObj += y[0]
         OriAveCmpt = overallObj/p
@@ -332,11 +334,11 @@ for deal in dealing_int:
         #plt.title("The average compactness has increased from: \n{} --> {}".format(initial_avg[x], average), fontsize=10)
         #ax.get_xaxis().set_ticks(range(axis_size))
         #ax.get_yaxis().set_ticks(range(axis_size))
-        
         #plt.grid()
         #plt.savefig('Soln_' + str(x) + '_PhaseII.png', dpi=72)
-        
-        initial_arr[x] = initial_avg[x]
+        initial_arr[x] = initial_avg[0]
         average_arr[x] = average
+        
         print initial_arr, average_arr
         print "Iteration Complete"
+    exit()
