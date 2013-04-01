@@ -213,14 +213,15 @@ def localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand):
         
     return unitRegionMemship, ZState, ZstateProperties
 
-def initialization(i, n,p,inputds,soln, seed, dealing_int):
+def initialization(i,stepsize, n,p,inputds,soln, seed, dealing_int):
     '''This function performs phase I of the algorithm'''
-    pcompact = pc.pCompactRegions(n,p,inputds)
-    pcompact.getSeeds_from_lattice(seed)
-    pcompact.dealing(dealing_int)
-    pcompact.greedy()
-    soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M, pcompact]
-    soln[i] = soln_specs
+    for soln_i in range(i, i+stepsize+1):
+        pcompact = pc.pCompactRegions(n,p,inputds)
+        pcompact.getSeeds_from_lattice(seed)
+        pcompact.dealing(dealing_int)
+        pcompact.greedy()
+        soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M, pcompact]
+        soln[soln_i] = soln_specs
 
 def local_search_wrapper(i, local_soln, soln, p, step_size):
     for y in range(i, i+step_size):
@@ -246,8 +247,9 @@ for deal in dealing_int:
 
     #print "Starting phase I"
     t1 = time.time()
+    stepsize = soln_space_size / cores
     #Multiprocessing phase I
-    jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed, deal)) for i in range(soln_space_size)]
+    jobs = [mp.Process(target=initialization,args=(i,stepsize,n,p,inputds,soln, seed, deal)) for i in range(0, soln_space_size, stepsize)]
     
     for job in jobs:
         job.start()
@@ -341,4 +343,3 @@ for deal in dealing_int:
         
         print initial_arr, average_arr
         print "Iteration Complete"
-    exit()
