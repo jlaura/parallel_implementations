@@ -29,6 +29,7 @@ def noticeEMail(starttime, usr, psw, fromaddr, toaddr):
     
     # Initialize SMTP server
     server=smtplib.SMTP('smtp.gmail.com:587')
+    server.ehlo()
     server.starttls()
     server.login(usr,psw)
     
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     starttime=datetime.now()
 
     # Call the bash script to run the test
-    call(['./test.sh','>>','p16_test'])
+    call('./test.sh')
         
     # Fill these in with the appropriate info...
     usr='jlaura@asu.edu'

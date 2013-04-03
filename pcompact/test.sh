@@ -1,9 +1,9 @@
 #!/bin/bash
 #echo "Bash version ${BASH_VERSION}..."
 
-for p in 4 #16 64
+for p in 4 16 64
 do
-    for c in 12 #2 4 6 8 10 12  
+    for c in 12  
     do
         #echo $i
         #mkdir "$HOME/working_dir/parallel_implementations/pcompact/iteration_$p_$c"

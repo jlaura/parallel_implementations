@@ -14,6 +14,7 @@ from pylab import imsave
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
+np.set_printoptions(precision=5,threshold='nan')
 
 #This will use all cores, we can use any integer < max(cores). 
 try:
@@ -34,15 +35,15 @@ elif sys.argv[1].split(".")[1] != 'dbf':
 inputds = sys.argv[1]
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = int(sys.argv[2])
-soln_space_size = 24
+soln_space_size = 2400
 if p == 4:
-    dealing_int = range(45,250)
+    dealing_int = range(8, 62)
     seed = [51,59,195,204]
 if p == 16:
-    dealing_int = range(16,250)
+    dealing_int = range(4,15)
     seed = [17, 22, 26, 30, 81, 85, 90, 94, 162, 165, 170, 174, 225, 229, 234, 238]
 if p ==64:
-    dealing_int = range(64,250)
+    dealing_int = range(1,3)
     seed = [ 0,  2,  4,  6,  8, 10, 12, 14, 32, 34, 36, 38, 40, 42, 44, 46,64, 66, 68, 70, 72, 74, 76,78, \
              96,  98, 100, 102, 104, 106, 108, 110,128, 130, 132, 134, 136, 138, 140, 142,160, 162, 164, 166, \
              168, 170, 172, 174,192, 194, 196, 198, 200, 202, 204, 206,224, 226, 228, 230, 232, 234, 236, 238 ]
@@ -235,7 +236,10 @@ def local_search_wrapper(i, local_soln, soln, p, step_size):
     stop = i+stepsize
     if stop > len(soln):
         stop = len(soln)
+    #pid = mp.current_process()._identity
+    #counter = 0
     for y in range(i, stop):
+        #counter += 1
         unitRegionMemship = soln[y][0]
         ZState = soln[y][1]
         ZstateProperties = soln[y][2]
@@ -247,7 +251,7 @@ def local_search_wrapper(i, local_soln, soln, p, step_size):
         urm, zs, zsp = localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand)
         soln_specs = [urm, zs, zsp]
         local_soln[y] = soln_specs 
-
+    #print pid, counter
 for deal in dealing_int:    
     print "Problem Size | number of regions | number of IFS | dealing integer | Cores"
     print n,p, soln_space_size,deal, cores
@@ -274,33 +278,30 @@ for deal in dealing_int:
     #Plot the output of the initial phase and save as a PNG
     initial_avg = np.empty(len(soln))
     for x in range(len(soln)):
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        axis_size =  int(sqrt(len(soln[x][0])))
+        #fig = plt.figure()
+        #ax = fig.add_subplot(111)
+        #axis_size =  int(sqrt(len(soln[x][0])))
         #Reshape the flat unit membership into a lattice and save.
-        local_img = []
-        for row in soln[x][0].itervalues(): 
-            local_img.append(row) 
-        local_img = np.asarray(local_img)
-        local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
-        plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
-
-
+        #local_img = []
+        #for row in soln[x][0].itervalues(): 
+            #local_img.append(row) 
+        #local_img = np.asarray(local_img)
+        #local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
+        #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
         overallObj = 0.0
         for y in soln[x][2]:
-            print y
+            #print y
             overallObj += y[0]
         OriAveCmpt = overallObj/p
         average = OriAveCmpt
         initial_avg[x] = average
         #initial_avg.append(average)
-        plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
-        ax.get_xaxis().set_ticks(range(axis_size))
-        ax.get_yaxis().set_ticks(range(axis_size))
+        #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
+        #ax.get_xaxis().set_ticks(range(axis_size))
+        #ax.get_yaxis().set_ticks(range(axis_size))
         
-        plt.grid()
-        plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
-    exit()
+        #plt.grid()
+        #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
     t3 = time.time()
     #Multiprocessing Phase II
     manager = mp.Manager()
@@ -333,4 +334,3 @@ for deal in dealing_int:
     print initial_arr
     print average_arr
     print "Iteration Complete"
-    exit()
