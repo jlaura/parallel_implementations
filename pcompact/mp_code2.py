@@ -1,27 +1,19 @@
 import multiprocessing as mp
-import pcompact_region as pc
+import pcompact_region2 as pc
 import numpy as np
 import random
 import sys
 
 #Testing
-import os
-import matplotlib
-matplotlib.use("Agg")
 import time
 from math import sqrt
 from pylab import imsave
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
-np.set_printoptions(precision=5,threshold='nan')
 
 #This will use all cores, we can use any integer < max(cores). 
-try:
-    cores = int(sys.argv[3]) 
-except:
-    print "Failed to get cores argument"
-    cores = mp.cpu_count()
+cores = mp.cpu_count() 
 
 #Variables
 if len(sys.argv) < 3:
@@ -31,23 +23,26 @@ if len(sys.argv) < 3:
 elif sys.argv[1].split(".")[1] != 'dbf':
     print "This script must target the shapefile dbf."
     exit(0)
-    
 inputds = sys.argv[1]
-n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
-p = int(sys.argv[2])
+n = 256#int(inputds.split("x")[0]) ** 2
+p = 64
+seed = [ 0,  2,  4,  6,  8, 10, 12, 14, 32, 34, 36, 38, 40, 42, 44, 46,64, 66, 68, 70, 72, 74, 76,78, 96,  98, 100, 102, 104, 106, 108, 110,128, 130, 132, 134, 136, 138, 140, 142,160, 162, 164, 166, 168, 170, 172, 174,192, 194, 196, 198, 200, 202, 204, 206,224, 226, 228, 230, 232, 234, 236, 238 ]
 soln_space_size = 4
-if p == 4:
-    dealing_int = range(8, 62)
-    seed = [51,59,195,204]
-if p == 16:
-    dealing_int = range(4,15)
-    seed = [17, 22, 26, 30, 81, 85, 90, 94, 162, 165, 170, 174, 225, 229, 234, 238]
-if p ==64:
-    dealing_int = range(1,3)
-    seed = [ 0,  2,  4,  6,  8, 10, 12, 14, 32, 34, 36, 38, 40, 42, 44, 46,64, 66, 68, 70, 72, 74, 76,78, \
-             96,  98, 100, 102, 104, 106, 108, 110,128, 130, 132, 134, 136, 138, 140, 142,160, 162, 164, 166, \
-             168, 170, 172, 174,192, 194, 196, 198, 200, 202, 204, 206,224, 226, 228, 230, 232, 234, 236, 238 ]
 
+#if sqrt(n) == 4:
+    #seed = [0,6,12,14]
+#elif sqrt(n) == 8:
+    #seed = [17,28,41,54]
+#elif sqrt(n) == 16:
+    #seed = [68,108,190,211]
+#elif sqrt(n) == 32:
+    #seed = [163,441,594,899]
+#elif sqrt(n) == 64:
+    #seed = [717,1786,2819,3703]
+#elif sqrt(n) == 128:
+    #seed = [1158,4960,12790,15364]
+#else:
+    #seed = [11,17,81,87]    
 def checkConnectivity(i, MZi, ZState, M):
     # if moving i from MZi will cause disconnected TAZ blocks, then no action is taken for this TAZ
     # ajacent TAZs
@@ -78,6 +73,7 @@ def checkConnectivity(i, MZi, ZState, M):
     else:
         return -1 
     
+
 def computeCompactness2(area, inertia):
     pi = 3.1415926
     return (area**2)/(2*pi*inertia)    
@@ -217,129 +213,114 @@ def localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand):
         
     return unitRegionMemship, ZState, ZstateProperties
 
-def initialization_s(n,p,inputds,seed, deal):
+
+#Initial Solution Space
+manager = mp.Manager() #Manages the low level locks
+soln = manager.dict()
+
+
+def initialization(i, n,p,inputds,soln, seed):
+    '''This function performs phase I of the algorithm'''
     pcompact = pc.pCompactRegions(n,p,inputds)
-    pcompact.getSeeds_from_lattice(seed)        
-    pcompact.dealing(dealing_int)
-    pcompact.greedy()    
-    soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M]
-    return soln_specs
+    pcompact.getSeeds_from_lattice(seed)
+    pcompact.dealing(19)
+    pcompact.greedy()
+    soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M, pcompact]
+    soln[i] = soln_specs
 
-def initialization(tup):
-    start = tup[0]; stop = tup[1]; n = tup[2]; p = tup[3]; inputds = tup[4]; seed = tup[5]; dealing_int = tup[6]
-    local_soln = {}
-    for x in range(start, stop):
-        '''This function performs phase I of the algorithm'''
-        pcompact = pc.pCompactRegions(n,p,inputds)
-        pcompact.getSeeds_from_lattice(seed)        
-        pcompact.dealing(dealing_int)
-        pcompact.greedy()
-        soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M]
-        del pcompact
-        local_soln[x] = soln_specs
-    return local_soln
+print "Starting phase I"
+t1 = time.time()
+#Multiprocessing phase I
+jobs = [mp.Process(target=initialization,args=(i, n,p,inputds,soln, seed)) for i in range(soln_space_size)]
+
+for job in jobs:
+    job.start()
+for job in jobs:
+    job.join()
+  
+t2 = time.time()
+print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
+print "Starting to save the output IFS as PNG."
+print soln[0]
+exit()
+initial_avg = []
+#Plot the output of the initial phase and save as a PNG
+for x in range(len(soln)):
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111)
+    #axis_size =  int(sqrt(n))
+    ##Reshape the flat unit membership into a lattice and save.
+    #local_img = []
+    #for element in soln[x][0].itervalues(): 
+        #local_img.append(element) 
+    #local_img = np.asarray(local_img)
+    #local_img.shape = (axis_size, axis_size)
+    #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
     
-
-def local_search_wrapper(i, local_soln, soln, p, step_size):
-    stop = i+stepsize
-    if stop > len(soln):
-        stop = len(soln)
-    #pid = mp.current_process()._identity
-    #counter = 0
-    for y in range(i, stop):
-        #counter += 1
-        unitRegionMemship = soln[y][0]
-        ZState = soln[y][1]
-        ZstateProperties = soln[y][2]
-        T = soln[y][3] #We returned the class instance in the dict, so grab is back
-        M = soln[y][4] 
-        pid=mp.current_process()._identity[0]
-        rand = random.Random(pid)
-        #Initialize the local search and pack the results into a dict, as above
-        urm, zs, zsp = localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand)
-        soln_specs = [urm, zs, zsp]
-        local_soln[y] = soln_specs 
-    #print pid, counter
-for deal in dealing_int: 
-    print "Problem Size | number of regions | number of IFS | dealing integer | Cores"
-    print n,p, soln_space_size,deal, cores
-    t1 = time.time()
-
-    pool = mp.Pool(cores)
-    stepsize = soln_space_size / cores
-    rem = soln_space_size % cores
-    sections = []
-    for x in xrange(0,soln_space_size-rem,stepsize):
-        sections.append([x,x+stepsize, n,p,inputds,seed, deal])
-    sections[-1][1] += rem
-    result_pool = pool.map(initialization, iterable=sections)
-    soln = {}
-    map(soln.update, result_pool)  
-
-    t2 = time.time()
-    print "Initialization Time"
-    print t2-t1
-    #print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
-    #print "Starting to save the output IFS as PNG."
-    initial_avg = []
-
-    #Plot the output of the initial phase and save as a PNG
-    initial_avg = np.empty(len(soln))
-    for x in range(len(soln)):
-        #fig = plt.figure()
-        #ax = fig.add_subplot(111)
-        #axis_size =  int(sqrt(len(soln[x][0])))
-        #Reshape the flat unit membership into a lattice and save.
-        #local_img = []
-        #for row in soln[x][0].itervalues(): 
-            #local_img.append(row) 
-        #local_img = np.asarray(local_img)
-        #local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
-        #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
-        overallObj = 0.0
-        for y in soln[x][2]:
-            #print y
-            overallObj += y[0]
-        OriAveCmpt = overallObj/p
-        average = OriAveCmpt
-        initial_avg[x] = average
-        #initial_avg.append(average)
-        #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
-        #ax.get_xaxis().set_ticks(range(axis_size))
-        #ax.get_yaxis().set_ticks(range(axis_size))
-        
-        #plt.grid()
-        #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
-    t3 = time.time()
-    #Multiprocessing Phase II
-    manager = mp.Manager()
-    local_soln = manager.dict()
-    step_size = len(soln) / cores
-    jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p, step_size)) for i in range(0,len(soln),step_size)]
+    #Compute the initial compactness metric and add as the title
+    overallObj = 0.0
+    for y in soln[x][2]:
+        overallObj += y[0]
+    OriAveCmpt = overallObj/p
+    average = OriAveCmpt
+    initial_avg.append(average)
+    #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
+    #ax.get_xaxis().set_ticks(range(axis_size))
+    #ax.get_yaxis().set_ticks(range(axis_size))
     
-    for job in jobs:
-        job.start()
-    for job in jobs:
-        job.join()
-    
-    t4 = time.time()
-    print "Local Search Time"
-    print str(t4-t3)
+    #plt.grid()
+    #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
 
-    initial_arr = np.empty(len(local_soln))
-    average_arr = np.empty(len(local_soln))
-
-    for x in range(len(local_soln)):
-        overallObj = 0.0
-        for y in local_soln[x][2]:
-            overallObj += y[0]
-        OriAveCmpt = overallObj/p
-        average = OriAveCmpt
-        initial_arr[x] = initial_avg[x]
-        average_arr[x] = average
+def local_search_wrapper(y, local_soln, soln, p):
+    unitRegionMemship = soln[y][0]
+    ZState = soln[y][1]
+    ZstateProperties = soln[y][2]
+    T = soln[y][3] #We returned the class instance in the dict, so grab is back
+    M = soln[y][4] 
+    pid=mp.current_process()._identity[0]
+    rand = random.Random(pid)
+    #Initialize the local search and pack the results into a dict, as above
+    urm, zs, zsp = localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand)
+    soln_specs = [urm, zs, zsp]
+    local_soln[y] = soln_specs 
     
-    print "Initial | Final"  
-    print initial_arr
-    print average_arr
-    print "Iteration Complete"
-    exit()
+print "Finished saving the output image, commencing phase II (local search)."
+t3 = time.time()
+#Multiprocessing Phase II
+local_soln = manager.dict()
+jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p)) for i in range(len(soln))]
+
+for job in jobs:
+    job.start()
+for job in jobs:
+    job.join()
+
+t4 = time.time()
+print "Completed local search phase for {} solutions in {} seconds with {} elements.".format(soln_space_size, t4-t3, n)
+print "Saving images for solution space after local search."
+#Plot the output of the second phase and save as a PNG
+for x in range(len(local_soln)):
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111)
+    #axis_size =  int(sqrt(len(local_soln[x][0])))
+    ##Reshape the flat unit membership into a lattice and save.
+    #local_img = []
+    #for row in local_soln[x][0].itervalues(): 
+        #local_img.append(row) 
+    #local_img = np.asarray(local_img)
+    #local_img.shape = (sqrt(len(local_soln[x][0])),sqrt(len(local_soln[x][0])))
+    #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
+    
+    #Compute the initial compactness metric and add as the title
+    overallObj = 0.0
+    for y in local_soln[x][2]:
+        overallObj += y[0]
+    OriAveCmpt = overallObj/p
+    average = OriAveCmpt
+    print "The average compactness has increased from: \n{} --> {}".format(initial_avg[x], average)
+    #plt.title("The average compactness has increased from: \n{} --> {}".format(initial_avg[x], average), fontsize=10)
+    #ax.get_xaxis().set_ticks(range(axis_size))
+    #ax.get_yaxis().set_ticks(range(axis_size))
+    
+    #plt.grid()
+    #plt.savefig('Soln_' + str(x) + '_PhaseII.png', dpi=72)
