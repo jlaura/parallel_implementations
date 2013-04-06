@@ -41,34 +41,36 @@ class pCompactRegions:
         #print "initialization"
         pass
     #read dbf file using pysal
-    def __init__(self, n, p, filename):
+    def __init__(self, n,p,M,V,T,values,allUnits):
         #print "initialize n basic unit, p regions and contiguity/attribute data"
         self.p  = p
         self.n = n
-        self.filename = filename
         #We have to clean out the class variables between iterations.
         #totalDealGreedy = 0
         self.Zstate = []
         self.ZstateProperties = []
         self.unitRegionMemship = {}
         self.regionObj = []
-        self.M = {} ; self.V = {}; self.T = {}
-        self.values = [] ; self.allUnits = []; self.TakenZones = [];
+        self.TakenZones = [];
+        self.M = M
+        self.V = V
+        self.T = T
+        self.values = values
+        self.allUnits = allUnits
         for i in range(p):
             self.Zstate.append([]) # ID of basic units within region i
             self.ZstateProperties.append([])
-        db = pysal.open(filename,'r')
+        #db = pysal.open(filename,'r')
         #row structure
         #ID, SARS, X, Adjacent
-        for row in db:
-            #dbf's structure: ID, SAR1, Uniform2, Adjacent. Touching
-            self.M[int(row[0])] = [int(s) for s in row[3].split(',')] #column index 3 gives the list of basic units which are adjacent
-            self.V[int(row[0])] = row[1] #column index 1 #value to compute dissimilarity
-            self.values.append([row[1], int(row[0])])
-            self.allUnits.append(int(row[0]))
-            self.T[int(row[0])] = [float(i) for i in [row[5]**2/(2*3.1415926*row[9]), row[5],row[6],row[9],row[7],row[8]]]
+        #for row in db:
+            ##dbf's structure: ID, SAR1, Uniform2, Adjacent. Touching
+            #self.M[int(row[0])] = [int(s) for s in row[3].split(',')] #column index 3 gives the list of basic units which are adjacent
+            #self.V[int(row[0])] = row[1] #column index 1 #value to compute dissimilarity
+            #self.values.append([row[1], int(row[0])])
+            #self.allUnits.append(int(row[0]))
+            #self.T[int(row[0])] = [float(i) for i in [row[5]**2/(2*3.1415926*row[9]), row[5],row[6],row[9],row[7],row[8]]]
     def getSeeds_from_lattice(self, seeds): # randomly select seeds to grow regions
-        self.unitReionMemship = {}
         for i in range(len(seeds)):
             self.Zstate[i] = [seeds[i]]
             self.ZstateProperties[i] =  self.T[seeds[i]]

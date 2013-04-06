@@ -3,6 +3,7 @@ import pcompact_region as pc
 import numpy as np
 import random
 import sys
+import pysal
 
 #Testing
 import os
@@ -31,8 +32,22 @@ if len(sys.argv) < 3:
 elif sys.argv[1].split(".")[1] != 'dbf':
     print "This script must target the shapefile dbf."
     exit(0)
-    
-inputds = sys.argv[1]
+
+#So we only open the file once    
+db = pysal.open(sys.argv[1], 'r')
+M={}
+V={}
+values=[]
+allUnits=[]
+T={}
+for row in db:
+    #dbf's structure: ID, SAR1, Uniform2, Adjacent. Touching
+    M[int(row[0])] = [int(s) for s in row[3].split(',')] #column index 3 gives the list of basic units which are adjacent
+    V[int(row[0])] = row[1] #column index 1 #value to compute dissimilarity
+    values.append([row[1], int(row[0])])
+    allUnits.append(int(row[0]))
+    T[int(row[0])] = [float(i) for i in [row[5]**2/(2*3.1415926*row[9]), row[5],row[6],row[9],row[7],row[8]]]
+
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = int(sys.argv[2])
 soln_space_size = 4
@@ -217,22 +232,25 @@ def localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand):
         
     return unitRegionMemship, ZState, ZstateProperties
 
-def initialization_s(n,p,inputds,seed, deal):
-    pcompact = pc.pCompactRegions(n,p,inputds)
-    pcompact.getSeeds_from_lattice(seed)        
-    pcompact.dealing(dealing_int)
-    pcompact.greedy()    
-    soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M]
-    return soln_specs
-
 def initialization(tup):
-    start = tup[0]; stop = tup[1]; n = tup[2]; p = tup[3]; inputds = tup[4]; seed = tup[5]; dealing_int = tup[6]
+    start = tup[0]
+    stop = tup[1]
+    n = tup[2]
+    p = tup[3]
+    M = tup[4]
+    V = tup[5]
+    T = tup[6]
+    values = tup[7]
+    allUnits = tup[8]
+    seed = tup[9]
+    deal = tup[10]
+    
     local_soln = {}
     for x in range(start, stop):
         '''This function performs phase I of the algorithm'''
-        pcompact = pc.pCompactRegions(n,p,inputds)
+        pcompact = pc.pCompactRegions(n,p,M,V,T,values,allUnits)
         pcompact.getSeeds_from_lattice(seed)        
-        pcompact.dealing(dealing_int)
+        pcompact.dealing(deal)
         pcompact.greedy()
         soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M]
         del pcompact
@@ -264,13 +282,12 @@ for deal in dealing_int:
     print "Problem Size | number of regions | number of IFS | dealing integer | Cores"
     print n,p, soln_space_size,deal, cores
     t1 = time.time()
-
     pool = mp.Pool(cores)
     stepsize = soln_space_size / cores
     rem = soln_space_size % cores
     sections = []
     for x in xrange(0,soln_space_size-rem,stepsize):
-        sections.append([x,x+stepsize, n,p,inputds,seed, deal])
+        sections.append([x,x+stepsize,n,p,M,V,T,values,allUnits,seed, deal])
     sections[-1][1] += rem
     result_pool = pool.map(initialization, iterable=sections)
     soln = {}
@@ -282,7 +299,6 @@ for deal in dealing_int:
     #print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
     #print "Starting to save the output IFS as PNG."
     initial_avg = []
-
     #Plot the output of the initial phase and save as a PNG
     initial_avg = np.empty(len(soln))
     for x in range(len(soln)):
@@ -342,4 +358,3 @@ for deal in dealing_int:
     print initial_arr
     print average_arr
     print "Iteration Complete"
-    exit()
