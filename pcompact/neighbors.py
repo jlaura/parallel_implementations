@@ -3,12 +3,12 @@ import sys
 import os
 from osgeo import ogr
 
-total_size = 256
+total_size = 324
 
 driver = ogr.GetDriverByName("ESRI Shapefile")
 
 output_shapefiles = []
-sizes = [16]
+sizes = [18]
 for size in sizes:
     output = "{}x{}.shp".format(size, size)
     output_shapefiles.append("{}x{}.shp".format(size, size))
@@ -118,7 +118,7 @@ for size in sizes:
             feature.SetField('Perimeter', (x2-x1)*4)
             feature.SetField('CentroidX', x2-(step/2))
             feature.SetField('CentroidY', y2-(step/2))
-            feature.SetField('MI', 1666.66666667)
+            feature.SetField('MI', 18**4 / 6)
             feature.SetField('ID', counter)
             counter += 1
             layer.CreateFeature(feature)
@@ -128,6 +128,7 @@ output=None
 
 for shapefile in output_shapefiles:
     w = pysal.rook_from_shapefile(shapefile)
+    print w
     infile = ogr.Open(shapefile, 1)
     inlyr = infile.GetLayerByIndex(0)
     counter = 0
