@@ -327,6 +327,7 @@ for deal in dealing_int:
         #plt.grid()
         #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
     t3 = time.time()
+    
     #Multiprocessing Phase II
     manager = mp.Manager()
     local_soln = manager.dict()
@@ -358,3 +359,4 @@ for deal in dealing_int:
     print initial_arr
     print average_arr
     print "Iteration Complete"
+    del manager, local_soln, jobs
