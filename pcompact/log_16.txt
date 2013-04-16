@@ -1,0 +1,6 @@
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256 4 4 8 12
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256 16 4 4 12
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256 64 4 1 12

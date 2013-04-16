@@ -1,7 +1,7 @@
 #!/bin/bash
 #echo "Bash version ${BASH_VERSION}..."
 
-for p in 4 16 64
+for p in 4 #64 16 4
 do
     for c in 12  
     do

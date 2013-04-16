@@ -54,8 +54,8 @@ if __name__ == '__main__':
         
     # Fill these in with the appropriate info...
     usr='jlaura@asu.edu'
-    psw='Tranquilita5'
-    fromaddr='jlaura@asu.edu'
+    psw='iL2|gL'
+    fromaddr='drferling@gmail.com'
     toaddr='jlaura@asu.edu'
 
     # Send notification email
