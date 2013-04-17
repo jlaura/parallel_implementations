@@ -371,3 +371,5 @@ for deal in dealing_int:
     print average_arr
     print "Iteration Complete"
     del manager, local_soln, jobs
+
+db.close()

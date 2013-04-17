@@ -1,0 +1,12 @@
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+324 36 2400 2 12
+Initialization Time
+53.5175459385
+Local Search Time
+0.0524709224701
+Initial | Final
+[]
+[]
+Iteration Complete
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+324 36 2400 3 12
