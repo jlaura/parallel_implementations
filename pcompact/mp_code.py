@@ -56,7 +56,7 @@ soln_space_size = 2400
 if n == 256: #16x16
     if p == 4:
         dealing_int = range(37, 62)
-        seed = [0,8,128,256]
+        seed = [0,8,128,136]
     if p == 16:
         dealing_int = range(4,15)
         seed = [0,4,8,12,64,68,72,76,128,132,136,140,192,196,200,204]
