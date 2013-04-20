@@ -17,6 +17,8 @@ from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
 np.set_printoptions(precision=5,threshold='nan')
 
+f = open('output_log.txt', 'a')
+
 #This will use all cores, we can use any integer < max(cores). 
 try:
     cores = int(sys.argv[3]) 
@@ -54,27 +56,36 @@ soln_space_size = 2400
 if n == 256: #16x16
     if p == 4:
         dealing_int = range(37, 62)
-        seed = [51,59,195,204]
+        seed = [0,8,128,256]
     if p == 16:
         dealing_int = range(4,15)
-        seed = [17, 22, 26, 30, 81, 85, 90, 94, 162, 165, 170, 174, 225, 229, 234, 238]
+        seed = [0,4,8,12,64,68,72,76,128,132,136,140,192,196,200,204]
     if p ==64:
-        dealing_int = range(2,3)
-        seed = [ 0,  2,  4,  6,  8, 10, 12, 14, 32, 34, 36, 38, 40, 42, 44, 46,64, 66, 68, 70, 72, 74, 76,78, \
-                 96,  98, 100, 102, 104, 106, 108, 110,128, 130, 132, 134, 136, 138, 140, 142,160, 162, 164, 166, \
-                 168, 170, 172, 174,192, 194, 196, 198, 200, 202, 204, 206,224, 226, 228, 230, 232, 234, 236, 238 ]
+        dealing_int = range(2,4)
+        seed = [ 0,2,4,6,8,10,12,14,32,34,36,38,40,42,44,46,64,66,68,70,72,74,76,78,96,98,100,102,104,106,108,110,128,130,132,134,136,138,140,142,160,162,164,166,168,170,172,174,192,194,196,198,200,202,204,206,224,226,228,230,232,234,236,238]
 
 elif n == 324: #18x18:
     if p == 9:
         dealing_int = range(4,34)
         seed = [0, 9, 17, 144, 153, 161, 306, 315, 323]
-    if p == 36:
-        dealing_int = range(3,7)
+    elif p == 36:
+        dealing_int = range(3,9)
         seed = [19, 22, 25, 28, 31, 34, 73, 76,79,82,85,88,127,130,133,136,139,142,181,184,187,190,193,196,235,238,241,244,247,250,289,292,295,298,301,304]
-    if p == 81:
-        dealing_int = range(3,3)
+    elif p == 81:
+        dealing_int = 3
         seed = [0,2,4,6,8,10,12,14,16,36,38,40,42,44,46,48,50,52,72,74,76,78,80,82,84,86,88,108,110,112,114,116,118,120,122,124,144,146,148,150,152,154,156,158,160,180,182,184,186,188,190,192,194,196,216,218,220,222,224,226,228,230,232,252,254,256,258,260,262,264,266,268,288,290,292,294,296,298,300,302,304]
-
+elif n == 196: #14x14:
+    if p == 49:
+        dealing_int = range(1,4)
+        seed = [0,2,4,6,8,10,12,28,30,32,34,36,38,40,56,58,60,62,64,66,68,84,86,88,90,92,94,96,112,114,116,118,120,122,124,140,142,144,146,148,150,152,168,170,172,174,176,178,180]
+elif n == 400: #20x20
+    if p == 25:
+        dealing_int = range(2,15)
+        seed = [0,4,8,12,16,80,84,88,92,96,160,164,168,172,176,240,244,248,252,256,320,324,328,332,336]
+    elif p == 100:
+        dealing_int = range(1,4)
+        seed = [0,2,4,6,8,10,12,14,16,18,40,42,44,46,48,50,52,54,56,58,80,82,84,86,88,90,92,94,96,98,120,122,124,126,128,130,132,134,136,138,160,162,164,166,168,170,172,174,176,178,200,202,204,206,208,210,212,214,216,218,240,242,244,246,248,250,252,254,256,258,280,282,284,286,288,290,292,294,296,298,320,322,324,326,328,330,332,334,336,338,360,362,364,366,368,370,372,374,376,378]
+        
 def checkConnectivity(i, MZi, ZState, M):
     # if moving i from MZi will cause disconnected TAZ blocks, then no action is taken for this TAZ
     # ajacent TAZs
@@ -291,8 +302,9 @@ def local_search_wrapper(i, local_soln, soln, p, step_size):
         local_soln[y] = soln_specs 
     #print pid, counter
 for deal in dealing_int: 
-    print "Problem Size | number of regions | number of IFS | dealing integer | Cores"
-    print n,p, soln_space_size,deal, cores
+    f.write("\n")
+    f.write("\nProblem Size | number of regions | number of IFS | dealing integer | Cores")
+    f.write("{},{},{},{},{}".format(n,p, soln_space_size,deal, cores))
     t1 = time.time()
     pool = mp.Pool(cores)
     stepsize = soln_space_size / cores
@@ -306,8 +318,7 @@ for deal in dealing_int:
     map(soln.update, result_pool)  
 
     t2 = time.time()
-    print "Initialization Time"
-    print t2-t1
+    f.write("\ntinit_{}_{}_{} = {}".format(n,p,deal, t2-t1))
     #print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
     #print "Starting to save the output IFS as PNG."
     initial_avg = []
@@ -351,8 +362,7 @@ for deal in dealing_int:
         job.join()
     
     t4 = time.time()
-    print "Local Search Time"
-    print str(t4-t3)
+    f.write("\ntlocal_{}_{}_{} = {}".format(n,p,deal, t4-t3))
 
     initial_arr = np.empty(len(local_soln))
     average_arr = np.empty(len(local_soln))
@@ -365,11 +375,8 @@ for deal in dealing_int:
         average = OriAveCmpt
         initial_arr[x] = initial_avg[x]
         average_arr[x] = average
-    
-    print "Initial | Final"  
-    print initial_arr
-    print average_arr
-    print "Iteration Complete"
+    f.write("\ninit_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(initial_arr, max_line_width=np.nan)))
+    f.write("\nfinal_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(average_arr, max_line_width=np.nan)))
     del manager, local_soln, jobs
-
 db.close()
+f.close()

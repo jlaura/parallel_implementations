@@ -1,16 +1,27 @@
 #!/bin/bash
 #echo "Bash version ${BASH_VERSION}..."
 
-for p in 4 #64 16 4
-do
-    for c in 12  
-    do
-        #echo $i
-        #mkdir "$HOME/working_dir/parallel_implementations/pcompact/iteration_$p_$c"
-        #mkdir "$HOME/github/parallel_implementations/pcompact/iteration_$p"
-        cd iteration_$p
-        python $HOME/working_dir/parallel_implementations/pcompact/mp_code.py $HOME/working_dir/parallel_implementations/pcompact/16x16.dbf $p $c 
-        #python $HOME/github/parallel_implementations/pcompact/mp_code.py $HOME/github/parallel_implementations/pcompact/16x16.dbf $p
-        cd ../
-    done
+for p in 4 16 64
+do 
+	echo $p
+	python mp_code.py 16x16.dbf $p 12  
 done
+
+for p in 9 26 81
+do
+	echo $p
+	python mp_code.py 18x18.dbf $p 12
+done
+
+for p in 49
+do
+	echo $p
+	python mp_code.py 14x14.dbf $p 12
+done
+
+for p in 25 100
+do
+	echo $p
+	python mp_code.py 20x20.dbf $p 12
+done
+
