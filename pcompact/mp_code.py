@@ -302,81 +302,85 @@ def local_search_wrapper(i, local_soln, soln, p, step_size):
         local_soln[y] = soln_specs 
     #print pid, counter
 for deal in dealing_int: 
-    f.write("\n")
-    f.write("\nProblem Size | number of regions | number of IFS | dealing integer | Cores")
-    f.write("{},{},{},{},{}".format(n,p, soln_space_size,deal, cores))
-    t1 = time.time()
-    pool = mp.Pool(cores)
-    stepsize = soln_space_size / cores
-    rem = soln_space_size % cores
-    sections = []
-    for x in xrange(0,soln_space_size-rem,stepsize):
-        sections.append([x,x+stepsize,n,p,M,V,T,values,allUnits,seed, deal])
-    sections[-1][1] += rem
-    result_pool = pool.map(initialization, iterable=sections)
-    soln = {}
-    map(soln.update, result_pool)  
-
-    t2 = time.time()
-    f.write("\ntinit_{}_{}_{} = {}".format(n,p,deal, t2-t1))
-    #print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
-    #print "Starting to save the output IFS as PNG."
-    initial_avg = []
-    #Plot the output of the initial phase and save as a PNG
-    initial_avg = np.empty(len(soln))
-    for x in range(len(soln)):
-        #fig = plt.figure()
-        #ax = fig.add_subplot(111)
-        #axis_size =  int(sqrt(len(soln[x][0])))
-        #Reshape the flat unit membership into a lattice and save.
-        #local_img = []
-        #for row in soln[x][0].itervalues(): 
-            #local_img.append(row) 
-        #local_img = np.asarray(local_img)
-        #local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
-        #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
-        overallObj = 0.0
-        for y in soln[x][2]:
-            #print y
-            overallObj += y[0]
-        OriAveCmpt = overallObj/p
-        average = OriAveCmpt
-        initial_avg[x] = average
-        #initial_avg.append(average)
-        #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
-        #ax.get_xaxis().set_ticks(range(axis_size))
-        #ax.get_yaxis().set_ticks(range(axis_size))
+    try:
+        f.write("\n")
+        f.write("\nProblem Size | number of regions | number of IFS | dealing integer | Cores")
+        f.write("{},{},{},{},{}".format(n,p, soln_space_size,deal, cores))
+        t1 = time.time()
+        pool = mp.Pool(cores)
+        stepsize = soln_space_size / cores
+        rem = soln_space_size % cores
+        sections = []
+        for x in xrange(0,soln_space_size-rem,stepsize):
+            sections.append([x,x+stepsize,n,p,M,V,T,values,allUnits,seed, deal])
+        sections[-1][1] += rem
+        result_pool = pool.map(initialization, iterable=sections)
+        soln = {}
+        map(soln.update, result_pool)  
+    
+        t2 = time.time()
+        f.write("\ntinit_{}_{}_{} = {}".format(n,p,deal, t2-t1))
+        #print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
+        #print "Starting to save the output IFS as PNG."
+        initial_avg = []
+        #Plot the output of the initial phase and save as a PNG
+        initial_avg = np.empty(len(soln))
+        for x in range(len(soln)):
+            #fig = plt.figure()
+            #ax = fig.add_subplot(111)
+            #axis_size =  int(sqrt(len(soln[x][0])))
+            #Reshape the flat unit membership into a lattice and save.
+            #local_img = []
+            #for row in soln[x][0].itervalues(): 
+                #local_img.append(row) 
+            #local_img = np.asarray(local_img)
+            #local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
+            #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
+            overallObj = 0.0
+            for y in soln[x][2]:
+                #print y
+                overallObj += y[0]
+            OriAveCmpt = overallObj/p
+            average = OriAveCmpt
+            initial_avg[x] = average
+            #initial_avg.append(average)
+            #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
+            #ax.get_xaxis().set_ticks(range(axis_size))
+            #ax.get_yaxis().set_ticks(range(axis_size))
+            
+            #plt.grid()
+            #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
+        t3 = time.time()
+        #Multiprocessing Phase II
+        manager = mp.Manager()
+        local_soln = manager.dict()
+        step_size = len(soln) / cores
+        jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p, step_size)) for i in range(0,len(soln),step_size)]
         
-        #plt.grid()
-        #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
-    t3 = time.time()
-    #Multiprocessing Phase II
-    manager = mp.Manager()
-    local_soln = manager.dict()
-    step_size = len(soln) / cores
-    jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p, step_size)) for i in range(0,len(soln),step_size)]
+        for job in jobs:
+            job.start()
+        for job in jobs:
+            job.join()
+        
+        t4 = time.time()
+        f.write("\ntlocal_{}_{}_{} = {}".format(n,p,deal, t4-t3))
     
-    for job in jobs:
-        job.start()
-    for job in jobs:
-        job.join()
+        initial_arr = np.empty(len(local_soln))
+        average_arr = np.empty(len(local_soln))
     
-    t4 = time.time()
-    f.write("\ntlocal_{}_{}_{} = {}".format(n,p,deal, t4-t3))
-
-    initial_arr = np.empty(len(local_soln))
-    average_arr = np.empty(len(local_soln))
-
-    for x in range(len(local_soln)):
-        overallObj = 0.0
-        for y in local_soln[x][2]:
-            overallObj += y[0]
-        OriAveCmpt = overallObj/p
-        average = OriAveCmpt
-        initial_arr[x] = initial_avg[x]
-        average_arr[x] = average
-    f.write("\ninit_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(initial_arr, max_line_width=np.nan)))
-    f.write("\nfinal_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(average_arr, max_line_width=np.nan)))
-    del manager, local_soln, jobs
+        for x in range(len(local_soln)):
+            overallObj = 0.0
+            for y in local_soln[x][2]:
+                overallObj += y[0]
+            OriAveCmpt = overallObj/p
+            average = OriAveCmpt
+            initial_arr[x] = initial_avg[x]
+            average_arr[x] = average
+        f.write("\ninit_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(initial_arr, max_line_width=np.nan)))
+        f.write("\nfinal_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(average_arr, max_line_width=np.nan)))
+        del manager, local_soln, jobs
+    except:
+        f.write("\n{},{},{},{},{} FAILED".format(n,p, soln_space_size,deal, cores))
+        print "FAILED: {} {} {}".format(n,p,deal)
 db.close()
 f.close()
