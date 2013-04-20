@@ -52,11 +52,11 @@ for row in db:
 
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = int(sys.argv[2])
-soln_space_size = 2400
+soln_space_size = 20
 if n == 256: #16x16
     if p == 4:
         dealing_int = range(37, 62)
-        seed = [0,8,128,136]
+        seed = [34,44,172,178]
     if p == 16:
         dealing_int = range(4,15)
         seed = [0,4,8,12,64,68,72,76,128,132,136,140,192,196,200,204]
@@ -223,36 +223,33 @@ def localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand):
     roundN = 0
     arrindex = 0
     while T0SA>=TfinalSA: #condition of SA
-        try:
-            ranindex = rand.randint(0,len(T)-1)
-            keys = T.keys()
-            i = keys[ranindex]
-            neigbrTAZi = M[i] # get all neighbouring TAZs of i
-            neigbrMZ = [] # the IDs of all neighbouring TAZ that a TAZ can be moved to
-            MZi = unitRegionMemship[i]
-            for e in M[i]: # get all the possible regions that basic unit i could be moved to
-                if unitRegionMemship[e] != MZi:
-                    if not unitRegionMemship[e] in neigbrMZ:# e should not be in the same region,the zone is not added to neigbrMZ before,  
-                        neigbrMZ.append(unitRegionMemship[e]) #put all the different MZ i's neighbour belongs to            
-            if len(neigbrMZ)>0:
-                if checkConnectivity(i, MZi, ZState, M)==0:
-                    graspparameter = deltaObjCal(i, MZi, neigbrMZ, ZstateProperties, T)
-                    delObj = graspparameter[0]
-                    if delObj > 0:
-                        MZk = graspparameter[2][10]
-                        unitRegionMemship[i] =  MZk # step1
-                        ZState[MZi].remove(i) #step2
-                        ZState[MZk].append(i) #step3
-                        #step4: update properties of MZi
-                        ZstateProperties[MZi][0:6] = graspparameter[1][0:6]
-                        ZstateProperties[MZk][0:6] = graspparameter[2][0:6]
-                        #OriAveCmpt = OriAveCmpt + delObj/len(self.Zstate)
-                        OriAveCmpt = sum([ZstateProperties[kk][0] for kk in range(p)])/p
-                        roundN += 1
-                    T0SA *= alphaSA # SA
-        except StopIteration:
-            break
-        
+        ranindex = rand.randint(0,len(T)-1)
+        keys = T.keys()
+        i = keys[ranindex]
+        neigbrTAZi = M[i] # get all neighbouring TAZs of i
+        neigbrMZ = [] # the IDs of all neighbouring TAZ that a TAZ can be moved to
+        MZi = unitRegionMemship[i]
+        for e in M[i]: # get all the possible regions that basic unit i could be moved to
+            if unitRegionMemship[e] != MZi:
+                if not unitRegionMemship[e] in neigbrMZ:# e should not be in the same region,the zone is not added to neigbrMZ before,  
+                    neigbrMZ.append(unitRegionMemship[e]) #put all the different MZ i's neighbour belongs to            
+        if len(neigbrMZ)>0:
+            if checkConnectivity(i, MZi, ZState, M)==0:
+                graspparameter = deltaObjCal(i, MZi, neigbrMZ, ZstateProperties, T)
+                delObj = graspparameter[0]
+                if delObj > 0:
+                    MZk = graspparameter[2][10]
+                    unitRegionMemship[i] =  MZk # step1
+                    ZState[MZi].remove(i) #step2
+                    ZState[MZk].append(i) #step3
+                    #step4: update properties of MZi
+                    ZstateProperties[MZi][0:6] = graspparameter[1][0:6]
+                    ZstateProperties[MZk][0:6] = graspparameter[2][0:6]
+                    #OriAveCmpt = OriAveCmpt + delObj/len(self.Zstate)
+                    OriAveCmpt = sum([ZstateProperties[kk][0] for kk in range(p)])/p
+                    roundN += 1
+                T0SA *= alphaSA # SA
+
     return unitRegionMemship, ZState, ZstateProperties
 
 def initialization(tup):
@@ -277,7 +274,7 @@ def initialization(tup):
         pcompact.greedy()
         soln_specs = [pcompact.unitRegionMemship, pcompact.Zstate, pcompact.ZstateProperties, pcompact.T, pcompact.M]
         del pcompact
-        local_soln[x] = soln_specs
+        local_soln[x] = soln_specs    
     return local_soln
     
 
@@ -301,23 +298,36 @@ def local_search_wrapper(i, local_soln, soln, p, step_size):
         soln_specs = [urm, zs, zsp]
         local_soln[y] = soln_specs 
     #print pid, counter
+
+
+
+
+    
 for deal in dealing_int: 
     try:
         f.write("\n")
         f.write("\nProblem Size | number of regions | number of IFS | dealing integer | Cores")
-        f.write("{},{},{},{},{}".format(n,p, soln_space_size,deal, cores))
+        f.write("\n{},{},{},{},{}".format(n,p, soln_space_size,deal, cores))
         t1 = time.time()
         pool = mp.Pool(cores)
         stepsize = soln_space_size / cores
         rem = soln_space_size % cores
-        sections = []
+        
+    
+        soln = []
+        def ifs(local_soln):
+            for s in local_soln.values():
+                soln.append(s)    
+        
+        sections = []       
         for x in xrange(0,soln_space_size-rem,stepsize):
             sections.append([x,x+stepsize,n,p,M,V,T,values,allUnits,seed, deal])
         sections[-1][1] += rem
-        result_pool = pool.map(initialization, iterable=sections)
-        soln = {}
-        map(soln.update, result_pool)  
-    
+        for section in sections:
+            pool.apply_async(func=initialization, args=(section,), callback = ifs)
+        pool.close()
+        pool.join()
+        
         t2 = time.time()
         f.write("\ntinit_{}_{}_{} = {}".format(n,p,deal, t2-t1))
         #print "Completed phase I in {} seconds for {} solutions with {} elements".format(t2-t1, soln_space_size, n)
@@ -361,7 +371,6 @@ for deal in dealing_int:
             job.start()
         for job in jobs:
             job.join()
-        
         t4 = time.time()
         f.write("\ntlocal_{}_{}_{} = {}".format(n,p,deal, t4-t3))
     
