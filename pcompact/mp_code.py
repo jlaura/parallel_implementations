@@ -17,7 +17,7 @@ from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
 np.set_printoptions(precision=5,threshold='nan')
 
-f = open('output_log.txt', 'a')
+f = open('output_log_more4.txt', 'a')
 
 #This will use all cores, we can use any integer < max(cores). 
 try:
@@ -52,10 +52,10 @@ for row in db:
 
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = int(sys.argv[2])
-soln_space_size = 20
+soln_space_size = 2400
 if n == 256: #16x16
     if p == 4:
-        dealing_int = range(37, 62)
+        dealing_int = range(2, 37)
         seed = [34,44,172,178]
     if p == 16:
         dealing_int = range(4,15)
@@ -72,7 +72,7 @@ elif n == 324: #18x18:
         dealing_int = range(3,9)
         seed = [19, 22, 25, 28, 31, 34, 73, 76,79,82,85,88,127,130,133,136,139,142,181,184,187,190,193,196,235,238,241,244,247,250,289,292,295,298,301,304]
     elif p == 81:
-        dealing_int = 3
+        dealing_int = range(3,4)
         seed = [0,2,4,6,8,10,12,14,16,36,38,40,42,44,46,48,50,52,72,74,76,78,80,82,84,86,88,108,110,112,114,116,118,120,122,124,144,146,148,150,152,154,156,158,160,180,182,184,186,188,190,192,194,196,216,218,220,222,224,226,228,230,232,252,254,256,258,260,262,264,266,268,288,290,292,294,296,298,300,302,304]
 elif n == 196: #14x14:
     if p == 49:
