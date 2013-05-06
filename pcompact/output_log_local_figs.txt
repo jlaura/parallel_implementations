@@ -1,0 +1,89 @@
+
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,24,40,4
+tinit_256_4_40 = 2.3551402092
+tlocal_256_4_40 = 20.5410819054
+init_256_4_40 = np.asarray([ 0.93079,  0.94979,  0.93839,  0.9423 ,  0.95127,  0.94436,  0.93799,  0.95003,  0.94499,  0.93665,  0.93874,  0.92676,  0.94169,  0.9408 ,  0.95047,  0.94603,  0.92805,  0.94543,  0.95212,  0.93111,  0.95001,  0.94521,  0.94474,  0.94894])
+final_256_4_40 = np.asarray([ 0.95256,  0.95135,  0.95346,  0.94741,  0.95636,  0.94741,  0.94741,  0.95636,  0.95636,  0.94741,  0.94741,  0.95636,  0.95346,  0.94741,  0.95636,  0.95256,  0.95636,  0.94741,  0.95636,  0.95256,  0.95636,  0.95636,  0.95256,  0.95961])
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,24,40,4
+tinit_256_4_40 = 2.54435682297
+tlocal_256_4_40 = 18.6419730186
+init_256_4_40 = np.asarray([ 0.94003,  0.93456,  0.92905,  0.94403,  0.93956,  0.94343,  0.94085,  0.93289,  0.94762,  0.95217,  0.93399,  0.9247 ,  0.95233,  0.94295,  0.95046,  0.95051,  0.94369,  0.9453 ,  0.95014,  0.93415,  0.94061,  0.94669,  0.92377,  0.95218])
+final_256_4_40 = np.asarray([ 0.95636,  0.95636,  0.95256,  0.95346,  0.95346,  0.95256,  0.95636,  0.95256,  0.95636,  0.95636,  0.95256,  0.95256,  0.95636,  0.95636,  0.95346,  0.95636,  0.95636,  0.95636,  0.95636,  0.95636,  0.94741,  0.95636,  0.95143,  0.95346])
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+324,9,24,32,4
+tinit_324_9_32 = 2.34584188461
+tlocal_324_9_32 = 9.44948506355
+init_324_9_32 = np.asarray([ 0.94061,  0.94438,  0.94055,  0.94367,  0.93955,  0.94538,  0.94715,  0.94181,  0.94718,  0.95043,  0.94822,  0.94333,  0.9466 ,  0.94187,  0.94592,  0.94557,  0.94141,  0.94524,  0.94176,  0.9474 ,  0.94032,  0.94856,  0.94954,  0.94572])
+final_324_9_32 = np.asarray([ 0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95493,  0.95209,  0.95209,  0.95493,  0.95493,  0.95209,  0.95209,  0.95209,  0.95493,  0.95493,  0.95209,  0.95493,  0.95493,  0.95209])
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,2
+tinit_256_4_32 = 1.53725910187
+256,4,8,32,2 FAILED
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.13178300858
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.14318203926
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.15025305748
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.02958297729
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.04620409012
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.23104500771
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.12854909897
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.12934303284
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.13166713715
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.34067606926
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.02948403358
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.34570217133
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.0298140049
+tlocal_256_4_32 = 7.94838190079
+init_256_4_32 = np.asarray([ 0.89823,  0.92655,  0.90871,  0.91957])
+final_256_4_32 = np.asarray([ 0.94981,  0.9515 ,  0.94995,  0.92594])
+
+Problem Size | number of regions | number of IFS | dealing integer | Cores
+256,4,8,32,4
+tinit_256_4_32 = 1.14823293686
+tlocal_256_4_32 = 11.6047849655
+init_256_4_32 = np.asarray([ 0.90987,  0.90358,  0.91558,  0.89577,  0.91353,  0.90221,  0.90403,  0.90431])
+final_256_4_32 = np.asarray([ 0.95346,  0.95256,  0.95143,  0.90603,  0.9515 ,  0.92594,  0.92983,  0.93303])

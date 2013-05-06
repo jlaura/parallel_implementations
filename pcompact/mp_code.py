@@ -17,7 +17,7 @@ from matplotlib.colors import ListedColormap
 cmap = ListedColormap(['red', 'green', 'blue', 'black', 'yellow', 'snow','peru','lightsalmon','gray','darkgreen'], 'indexed')
 np.set_printoptions(precision=5,threshold='nan')
 
-f = open('output_log_more4.txt', 'a')
+f = open('output_log_local_figs.txt', 'a')
 
 #This will use all cores, we can use any integer < max(cores). 
 try:
@@ -52,7 +52,7 @@ for row in db:
 
 n = int(os.path.basename(sys.argv[1]).split("x")[0]) ** 2
 p = int(sys.argv[2])
-soln_space_size = 2400
+soln_space_size = 8
 if n == 256: #16x16
     if p == 4:
         dealing_int = range(2, 37)
@@ -278,25 +278,31 @@ def initialization(tup):
     return local_soln
     
 
-def local_search_wrapper(i, local_soln, soln, p, step_size):
-    stop = i+stepsize
-    if stop > len(soln):
-        stop = len(soln)
+def local_search_wrapper(ifs, local_search):
     #pid = mp.current_process()._identity
     #counter = 0
-    for y in range(i, stop):
-        #counter += 1
-        unitRegionMemship = soln[y][0]
-        ZState = soln[y][1]
-        ZstateProperties = soln[y][2]
-        T = soln[y][3] #We returned the class instance in the dict, so grab is back
-        M = soln[y][4] 
+    while True:
         pid=mp.current_process()._identity[0]
         rand = random.Random(pid)
+        soln = ifs.get()
+        if soln == None:
+            #print "PILL on process: ", pid
+            #Poison pill - we are done working
+            ifs.task_done()
+            break
+        #Else find the soln.
+        unitRegionMemship = soln[0]
+        ZState = soln[1]
+        ZstateProperties = soln[2]
+        T = soln[3]
+        M = soln[4]
         #Initialize the local search and pack the results into a dict, as above
         urm, zs, zsp = localsearch(unitRegionMemship, ZState, ZstateProperties, T,M,p, rand)
         soln_specs = [urm, zs, zsp]
-        local_soln[y] = soln_specs 
+        local_search.put(soln_specs)
+        #print "Task Done"
+        ifs.task_done()
+    return
     #print pid, counter
 
 
@@ -336,16 +342,16 @@ for deal in dealing_int:
         #Plot the output of the initial phase and save as a PNG
         initial_avg = np.empty(len(soln))
         for x in range(len(soln)):
-            #fig = plt.figure()
-            #ax = fig.add_subplot(111)
-            #axis_size =  int(sqrt(len(soln[x][0])))
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            axis_size =  int(sqrt(len(soln[x][0])))
             #Reshape the flat unit membership into a lattice and save.
-            #local_img = []
-            #for row in soln[x][0].itervalues(): 
-                #local_img.append(row) 
-            #local_img = np.asarray(local_img)
-            #local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
-            #plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
+            local_img = []
+            for row in soln[x][0].itervalues(): 
+                local_img.append(row) 
+            local_img = np.asarray(local_img)
+            local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
+            plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
             overallObj = 0.0
             for y in soln[x][2]:
                 #print y
@@ -354,30 +360,54 @@ for deal in dealing_int:
             average = OriAveCmpt
             initial_avg[x] = average
             #initial_avg.append(average)
-            #plt.title("The average compactness of solution {} \nis {}".format(x, average), fontsize=10)
-            #ax.get_xaxis().set_ticks(range(axis_size))
-            #ax.get_yaxis().set_ticks(range(axis_size))
+            plt.title("The average initial compactness of solution {} \nis {}".format(x, average), fontsize=10)
+            ax.get_xaxis().set_ticks(range(axis_size))
+            ax.get_yaxis().set_ticks(range(axis_size))
             
-            #plt.grid()
-            #plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
+            plt.grid()
+            plt.savefig('Soln_' + str(x) + '_PhaseI.png', dpi=72)
         t3 = time.time()
         #Multiprocessing Phase II
-        manager = mp.Manager()
-        local_soln = manager.dict()
-        step_size = len(soln) / cores
-        jobs = [mp.Process(target=local_search_wrapper, args=(i, local_soln, soln, p, step_size)) for i in range(0,len(soln),step_size)]
         
+        #Create the queues to get from and put to
+        ifs = mp.JoinableQueue()
+        local_search = mp.Queue()
+    
+        #Launch as many processes as we have cores
+        jobs = [mp.Process(target=local_search_wrapper, args=(ifs, local_search)) for i in range(0,cores)]
         for job in jobs:
             job.start()
-        for job in jobs:
-            job.join()
+        #Add the ifs jobs to the queue:
+        for s in soln:
+            ifs.put(s)
+        #Add the poison pill to the job queue    
+        for c in range(cores):
+            ifs.put(None)
+          
+        local_soln = []
+        for x in range(len(soln)):
+            result = local_search.get()
+            local_soln.append(result)
+        
+        #ifs.join()
         t4 = time.time()
         f.write("\ntlocal_{}_{}_{} = {}".format(n,p,deal, t4-t3))
-    
+        
         initial_arr = np.empty(len(local_soln))
         average_arr = np.empty(len(local_soln))
     
         for x in range(len(local_soln)):
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            axis_size =  int(sqrt(len(soln[x][0])))
+            #Reshape the flat unit membership into a lattice and save.
+            local_img = []
+            for row in local_soln[x][0].itervalues(): 
+                local_img.append(row) 
+            local_img = np.asarray(local_img)
+            local_img.shape = (sqrt(len(soln[x][0])),sqrt(len(soln[x][0])))
+            plt.imshow(local_img, cmap=cmap, interpolation='none', extent=(0,axis_size,0,axis_size))
+            overallObj = 0.0            
             overallObj = 0.0
             for y in local_soln[x][2]:
                 overallObj += y[0]
@@ -385,9 +415,16 @@ for deal in dealing_int:
             average = OriAveCmpt
             initial_arr[x] = initial_avg[x]
             average_arr[x] = average
+            plt.title("The average final compactness of solution {} \nis {}".format(x, average), fontsize=10)
+            ax.get_xaxis().set_ticks(range(axis_size))
+            ax.get_yaxis().set_ticks(range(axis_size))
+                        
+            plt.grid()
+            plt.savefig('Soln_' + str(x) + '_PhaseII.png', dpi=72)  
+            
         f.write("\ninit_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(initial_arr, max_line_width=np.nan)))
         f.write("\nfinal_{}_{}_{} = np.as{}".format(n,p,deal,np.array_repr(average_arr, max_line_width=np.nan)))
-        del manager, local_soln, jobs
+
     except:
         f.write("\n{},{},{},{},{} FAILED".format(n,p, soln_space_size,deal, cores))
         print "FAILED: {} {} {}".format(n,p,deal)
