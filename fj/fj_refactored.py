@@ -6,7 +6,84 @@ import warnings
 
 #Suppress the divide by zero errors
 warnings.filterwarnings('ignore', category=RuntimeWarning)
+def allocate(values, classes):
+    '''This function allocates memory for the variance matrix, error matrix, 
+    and pivot matrix.  It also moves the variance matrix and error matrix from
+    numpy types to a ctypes, shared memory array.'''
+    
+    numClass = classes
+    numVal = len(values)
+    
+    varCtypes = multiprocessing.RawArray(ctypes.c_double, numVal*numVal)
+    varMat = numpy.frombuffer(varCtypes)
+    varMat.shape = (numVal,numVal)
+    
+    for x in range(0,len(values)):
+	varMat[x] = values[:]
+	varMat[x][0:x] = 0
 
+    errCtypes = multiprocessing.RawArray(ctypes.c_double, classes*numVal)
+    errorMat = numpy.frombuffer(errCtypes)
+    errorMat.shape = (classes, numVal)
+    
+    pivotShape = (classes, numVal)
+    pivotMat = numpy.ndarray(pivotShape, dtype=numpy.float)
+    
+    #Initialize the arrays as globals.
+    initArr(varMat, errorMat)
+    
+    return pivotMat, numClass
+
+def initArr(varMat_, errorMat_):
+    '''Initialize the ctypes arrays as global variables for multiprocessing'''
+    global sharedVar
+    sharedVar = varMat_
+    
+    global sharedErr
+    sharedErr = errorMat_
+
+def initErrRow(errRow_):
+    '''Initialize the sharedErrRow as a global for multiprocessing'''
+    global sharedErrRow
+    sharedErrRow = errRow_
+
+def fj(sharedVar,i, values, start):
+    '''This function facilitates passing multiple rows to each process and
+    then performing multiple vector calculations along individual rows.'''
+    arr = sharedVar
+    arr[i] = numpy.apply_along_axis(calcVar, 1, arr[i], len(values))
+    arr[i][numpy.isnan(arr[i])] = 0
+
+def calcVar(arrRow, lenValues):
+    '''This function calculates the diameter matrix.  It is called by fj.
+    The return line performs the calculation.  All other lines prepare an
+    order vector, prepended with zeros when necesary which stores n, the number 
+    of elements summed for each index.'''
+    
+    lenN = (arrRow != 0).sum()
+    n = numpy.arange(1, lenN+1)
+    
+    if lenN != lenValues:
+	n.resize(arrRow.shape[0]) 	
+	n[arrRow.shape[0]-lenN:] =  n[:lenN-arrRow.shape[0]] 
+	n[0:arrRow.shape[0]-lenN] = 0 
+
+    return ((numpy.cumsum(numpy.square(arrRow))) - \
+            ((numpy.cumsum(arrRow)*numpy.cumsum(arrRow)) / (n)))
+
+def err(row,y,step, lenrow):
+    '''This function computes the error on a segment of each error row, from the error matrix.  
+    The function is provided with the row number, starting index, step size, and total row length.
+    Since start + step could be greater than row length the first three lines check for this condition
+    and set the stop variable to the appropriate value'''
+
+    stop = (y+step)
+    if stop+1 > lenrow:
+	stop = lenrow-1
+    while y <= stop:
+	sharedErrRow[y] = numpy.amin(sharedErr[row-1][row-1:y+row] + sharedVar[:,y+row][row:y+row+1])
+	y+=1
+	    
 def fisher_jenks(values, classes=5, sort=True):
     '''Fisher-Jenks Optimal Partitioning of an ordered array into k classes
 
@@ -40,86 +117,7 @@ def fisher_jenks(values, classes=5, sort=True):
     >>> p1 = fisher_jenks(x, 5)
     >>> p1
     [2, 7, 9, 15]
-    '''
-
-    def allocate(values, classes):
-	'''This function allocates memory for the variance matrix, error matrix, 
-	and pivot matrix.  It also moves the variance matrix and error matrix from
-	numpy types to a ctypes, shared memory array.'''
-	
-	numClass = classes
-	numVal = len(values)
-	
-	varCtypes = multiprocessing.RawArray(ctypes.c_double, numVal*numVal)
-	varMat = numpy.frombuffer(varCtypes)
-	varMat.shape = (numVal,numVal)
-	
-	for x in range(0,len(values)):
-	    varMat[x] = values[:]
-	    varMat[x][0:x] = 0
-    
-	errCtypes = multiprocessing.RawArray(ctypes.c_double, classes*numVal)
-	errorMat = numpy.frombuffer(errCtypes)
-	errorMat.shape = (classes, numVal)
-	
-	pivotShape = (classes, numVal)
-	pivotMat = numpy.ndarray(pivotShape, dtype=numpy.float)
-	
-	#Initialize the arrays as globals.
-	initArr(varMat, errorMat)
-	
-	return pivotMat, numClass
-    
-    def initArr(varMat_, errorMat_):
-	'''Initialize the ctypes arrays as global variables for multiprocessing'''
-	global sharedVar
-	sharedVar = varMat_
-	
-	global sharedErr
-	sharedErr = errorMat_
-    
-    def initErrRow(errRow_):
-	'''Initialize the sharedErrRow as a global for multiprocessing'''
-	global sharedErrRow
-	sharedErrRow = errRow_
-    
-    def fj(sharedVar,i, values, start):
-	'''This function facilitates passing multiple rows to each process and
-	then performing multiple vector calculations along individual rows.'''
-	arr = sharedVar
-	arr[i] = numpy.apply_along_axis(calcVar, 1, arr[i], len(values))
-	arr[i][numpy.isnan(arr[i])] = 0
-    
-    def calcVar(arrRow, lenValues):
-	'''This function calculates the diameter matrix.  It is called by fj.
-	The return line performs the calculation.  All other lines prepare an
-	order vector, prepended with zeros when necesary which stores n, the number 
-	of elements summed for each index.'''
-	
-	lenN = (arrRow != 0).sum()
-	n = numpy.arange(1, lenN+1)
-	
-	if lenN != lenValues:
-	    n.resize(arrRow.shape[0]) 	
-	    n[arrRow.shape[0]-lenN:] =  n[:lenN-arrRow.shape[0]] 
-	    n[0:arrRow.shape[0]-lenN] = 0 
-    
-	return ((numpy.cumsum(numpy.square(arrRow))) - \
-	        ((numpy.cumsum(arrRow)*numpy.cumsum(arrRow)) / (n)))
-    
-    def err(row,y,step, lenrow):
-	'''This function computes the error on a segment of each error row, from the error matrix.  
-	The function is provided with the row number, starting index, step size, and total row length.
-	Since start + step could be greater than row length the first three lines check for this condition
-	and set the stop variable to the appropriate value'''
-    
-	stop = (y+step)
-	if stop+1 > lenrow:
-	    stop = lenrow-1
-	while y <= stop:
-	    sharedErrRow[y] = numpy.amin(sharedErr[row-1][row-1:y+row] + sharedVar[:,y+row][row:y+row+1])
-	    y+=1   
-    
+    '''   
     if sort:
 	values.sort()
 	
